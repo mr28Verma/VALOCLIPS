@@ -8,8 +8,8 @@ import {
 
 const navLinks = [
   {
-    name: "Clips",
-    path: "/",
+    name: "Profile",
+    path: "/profile",
   },
   {
     name: "Agents",
@@ -25,11 +25,9 @@ function Navbar({ user }) {
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const isLoggedIn =
-    location.pathname === "/" ||
-    location.pathname === "/profile" ||
-    location.pathname === "/agents" ||
-    location.pathname === "/leaderboards"
+  // Landing page should show Connect Riot.
+  // Other pages show the demo connected account.
+  const isLoggedIn = location.pathname !== "/"
 
   const closeMobileMenu = () => {
     setMobileOpen(false)
@@ -38,9 +36,7 @@ function Navbar({ user }) {
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#08090B]/95 backdrop-blur-xl">
 
-      {/* =====================================================
-          MAIN NAVBAR
-      ====================================================== */}
+      {/* MAIN NAVBAR */}
 
       <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-10">
 
@@ -58,15 +54,13 @@ function Navbar({ user }) {
           />
         </Link>
 
-        {/* =================================================
-            DESKTOP NAVIGATION
-        ================================================== */}
+
+        {/* DESKTOP NAVIGATION */}
 
         <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 md:flex">
 
           {navLinks.map((link) => {
-            const isActive =
-              location.pathname === link.path
+            const isActive = location.pathname === link.path
 
             return (
               <Link
@@ -93,21 +87,19 @@ function Navbar({ user }) {
 
         </nav>
 
-        {/* =================================================
-            RIGHT SIDE
-        ================================================== */}
+
+        {/* RIGHT SIDE */}
 
         <div className="flex items-center gap-2">
 
           {/* DESKTOP ACCOUNT */}
 
           {isLoggedIn ? (
+
             <button
               type="button"
               className="group hidden items-center gap-2.5 border border-white/[0.07] bg-[#0D0E11] px-2.5 py-2 transition-all duration-200 hover:border-white/[0.14] hover:bg-[#111216] sm:flex"
             >
-
-              {/* Riot */}
 
               <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-[#FF4655]">
                 <img
@@ -116,8 +108,6 @@ function Navbar({ user }) {
                   className="h-[15px] w-[15px] object-contain"
                 />
               </div>
-
-              {/* User */}
 
               <div className="hidden text-left md:block">
 
@@ -151,9 +141,8 @@ function Navbar({ user }) {
               />
 
             </button>
-          ) : (
 
-            /* CONNECT RIOT */
+          ) : (
 
             <Link
               to="/profile"
@@ -171,9 +160,11 @@ function Navbar({ user }) {
               </span>
 
             </Link>
+
           )}
 
-          {/* MOBILE MENU BUTTON */}
+
+          {/* MOBILE MENU */}
 
           <button
             type="button"
@@ -198,9 +189,8 @@ function Navbar({ user }) {
 
       </div>
 
-      {/* =====================================================
-          MOBILE MENU
-      ====================================================== */}
+
+      {/* MOBILE MENU */}
 
       <div
         className={`overflow-hidden border-t border-white/[0.06] bg-[#090A0C] transition-all duration-300 md:hidden ${
@@ -217,8 +207,7 @@ function Navbar({ user }) {
           <nav className="flex flex-col">
 
             {navLinks.map((link) => {
-              const isActive =
-                location.pathname === link.path
+              const isActive = location.pathname === link.path
 
               return (
                 <Link
@@ -246,21 +235,21 @@ function Navbar({ user }) {
 
           </nav>
 
+
           {/* MOBILE ACCOUNT */}
 
           <div className="mt-4">
 
             {isLoggedIn ? (
+
               <div className="flex items-center gap-3 border border-white/[0.07] bg-[#0D0E11] p-3">
 
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center bg-[#FF4655]">
-
                   <img
                     src="/riot.png"
                     alt="Riot"
                     className="h-[17px] w-[17px] object-contain"
                   />
-
                 </div>
 
                 <div>
@@ -290,11 +279,13 @@ function Navbar({ user }) {
                 </div>
 
               </div>
+
             ) : (
+
               <Link
                 to="/profile"
                 onClick={closeMobileMenu}
-                className="flex w-full items-center justify-center gap-2 bg-[#FF4655] px-4 py-3 font-display text-[10px] font-bold uppercase tracking-[0.12em] text-white"
+                className="flex w-full items-center justify-center gap-2 bg-[#FF4655] px-4 py-3 font-display text-[10px] font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#e63d4c]"
               >
 
                 <img
@@ -306,6 +297,7 @@ function Navbar({ user }) {
                 Connect Riot
 
               </Link>
+
             )}
 
           </div>
