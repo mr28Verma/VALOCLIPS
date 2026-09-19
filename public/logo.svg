@@ -1,41 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 86" width="430" height="86" fill="none">
-  <defs>
-    <style>
-      .white {
-        fill: #ffffff;
-      }
-
-      .red {
-        fill: #ff4655;
-      }
-
-      .wordmark {
-        font-family: "Space Grotesk", "Arial Black", Arial, sans-serif;
-        font-weight: 900;
-        font-style: italic;
-      }
-    </style>
-  </defs>
-
-  <!-- ================= SYMBOL ================= -->
-
-  <g transform="translate(2 4) scale(0.68)">
-
-    <!-- Left blade -->
-    <polygon class="white" points="0,0 32,0 60,70 28,70"></polygon>
-
-    <!-- Red inner blade -->
-    <polygon class="red" points="38,0 80,50 48,110 24,110 46,55"></polygon>
-
-    <!-- Right blade -->
-    <polygon class="white" points="88,0 120,0 76,110 44,110 74,38"></polygon>
-
-  </g>
-
-  <!-- ================= WORDMARK ================= -->
-
-  <text x="95" y="58" class="wordmark" font-size="52" letter-spacing="-2.5">
-    <tspan class="white">valo</tspan><tspan class="red">Clips</tspan>
-  </text>
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" fill="none">
+<defs>
+<linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FF5260"/><stop offset=".45" stop-color="#FF3B4A"/><stop offset="1" stop-color="#BD1028"/></linearGradient>
+<linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FF727F"/><stop offset="1" stop-color="#FF3B4A"/></linearGradient>
+<linearGradient id="c" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FF4353"/><stop offset=".5" stop-color="#C8122B"/><stop offset="1" stop-color="#7A0010"/></linearGradient>
+<linearGradient id="d" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FF6B78"/><stop offset="1" stop-color="#E6263A"/></linearGradient>
+<linearGradient id="e" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#E62238"/><stop offset="1" stop-color="#9E0013"/></linearGradient>
+<linearGradient id="f" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FF4D5E"/><stop offset="1" stop-color="#D9142A"/></linearGradient>
+</defs>
+<g transform="translate(8 10) scale(.40)">
+<g stroke="#FF2B3E" stroke-width="4" fill="none" stroke-linecap="square">
+<path d="M250 70A180 180 0 0 1 430 250"/><path d="M430 250A180 180 0 0 1 250 430"/><path d="M250 430A180 180 0 0 1 70 250"/><path d="M70 250A180 180 0 0 1 250 70"/>
+<line x1="250" y1="50" x2="250" y2="90" stroke-width="8"/><line x1="250" y1="410" x2="250" y2="450" stroke-width="8"/><line x1="50" y1="250" x2="90" y2="250" stroke-width="8"/><line x1="410" y1="250" x2="450" y2="250" stroke-width="8"/>
+</g>
+<path d="M222 180L290 225C295 228 295 236 290 239L222 284C215 288 207 283 207 275V189C207 181 215 176 222 180Z" fill="url(#f)"/>
+<path d="M86 80L195 215L255 398L96 160Z" fill="url(#a)"/><path d="M86 80L195 215L180 245L86 130Z" fill="url(#b)"/>
+<polygon points="95,170 120,180 120,230 100,205" fill="#0D0003"/><polygon points="160,310 185,320 195,355 175,345" fill="#0D0003"/>
+<path d="M414 105L330 285L260 398L320 285Z" fill="url(#c)"/><path d="M414 105L330 285L320 230L380 135Z" fill="url(#d)"/><path d="M320 230L330 285L260 398L260 280Z" fill="url(#e)"/><polygon points="338,245 348,230 380,265 338,300" fill="#0D0003"/>
+</g>
+<text x="205" y="142" font-family="Arial,Helvetica,sans-serif" font-size="82" font-weight="900" font-style="italic" letter-spacing="-4"><tspan fill="#fff">valo</tspan><tspan fill="#FF4655">Clips</tspan></text>
 </svg>
