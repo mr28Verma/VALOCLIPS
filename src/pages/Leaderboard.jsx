@@ -5,10 +5,14 @@ import {
   Target,
   Shield,
   Brain,
+  Info,
 } from "lucide-react"
 
 /* =========================================================
-   SCORING SYSTEM
+   PRIVATE CLIP SCORING
+   ---------------------------------------------------------
+   This score is only for the private valoClips community.
+   It is NOT an official VALORANT rank, MMR, or ELO.
 ========================================================= */
 
 const PLAY_POINTS = {
@@ -142,7 +146,7 @@ const friends = [
 ]
 
 /* =========================================================
-   CALCULATE SCORE
+   CALCULATE PLAY SCORE
 ========================================================= */
 
 function calculateScore(plays) {
@@ -201,21 +205,21 @@ function Leaderboards() {
                 <span className="h-px w-8 bg-[#FF4655]" />
 
                 <span className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF4655]">
-                  Squad Rankings
+                  Squad Highlights
                 </span>
 
               </div>
 
               <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-[-0.05em] sm:mt-4 sm:text-6xl">
-                Leader
+                Top
                 <span className="text-[#FF4655]">
-                  boards.
+                  {" "}plays.
                 </span>
               </h1>
 
               <p className="mt-4 max-w-xl text-xs leading-5 text-[#70737B] sm:mt-5 sm:text-sm sm:leading-6">
-                Five players. One leaderboard. Let the clips
-                decide who leads the squad.
+                Five players. One private space. Let the clips
+                decide who is making the biggest moments.
               </p>
 
             </div>
@@ -241,6 +245,35 @@ function Leaderboards() {
       </section>
 
       {/* =====================================================
+          INFORMATION NOTICE
+      ====================================================== */}
+
+      <section className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10">
+
+        <div className="flex gap-3 border border-white/[0.06] bg-[#0B0D10] px-4 py-3.5 sm:px-5">
+
+          <Info
+            size={15}
+            className="mt-0.5 shrink-0 text-[#FF4655]"
+          />
+
+          <p className="text-[10px] leading-5 text-[#666970] sm:text-xs">
+
+            <span className="font-semibold text-[#A0A3AA]">
+              Private play scoring:
+            </span>{" "}
+
+            Points are used only for this private clip community.
+            They do not represent official VALORANT rank, MMR,
+            ELO, skill rating, or competitive ranking.
+
+          </p>
+
+        </div>
+
+      </section>
+
+      {/* =====================================================
           TOP 3
       ====================================================== */}
 
@@ -251,11 +284,11 @@ function Leaderboards() {
           <div>
 
             <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-[#555960]">
-              CURRENT RANKING
+              TOP MOMENTS
             </p>
 
             <h2 className="mt-2 font-display text-xl font-bold uppercase tracking-[-0.02em]">
-              Top players
+              Leading players
             </h2>
 
           </div>
@@ -280,11 +313,13 @@ function Leaderboards() {
         <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
 
           {topThree.map((player, index) => (
+
             <TopPlayer
               key={player.name}
               player={player}
               position={index}
             />
+
           ))}
 
         </div>
@@ -300,7 +335,7 @@ function Leaderboards() {
         <div className="mb-5">
 
           <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-[#555960]">
-            THE REST OF THE SQUAD
+            OTHER PLAYERS
           </p>
 
         </div>
@@ -312,6 +347,7 @@ function Leaderboards() {
             const position = index + 4
 
             return (
+
               <div
                 key={player.name}
                 className="group flex items-center gap-2.5 border-b border-white/[0.06] px-3 py-4 transition last:border-b-0 hover:bg-white/[0.025] sm:gap-4 sm:px-5 sm:py-5"
@@ -396,12 +432,13 @@ function Leaderboards() {
                   </p>
 
                   <p className="mt-1 font-display text-[7px] font-bold uppercase tracking-[0.14em] text-[#555960]">
-                    SCORE
+                    PLAY SCORE
                   </p>
 
                 </div>
 
               </div>
+
             )
           })}
 
@@ -428,25 +465,38 @@ function Leaderboards() {
                 <span className="h-px w-7 bg-[#FF4655]" />
 
                 <span className="font-display text-[9px] font-bold uppercase tracking-[0.18em] text-[#FF4655]">
-                  How it works
+                  Private scoring
                 </span>
 
               </div>
 
               <h2 className="mt-4 font-display text-3xl font-bold uppercase tracking-[-0.04em] sm:text-4xl">
+
                 Play.
                 <br />
                 Score.
                 <br />
+
                 <span className="text-[#FF4655]">
-                  Climb.
+                  Celebrate.
                 </span>
+
               </h2>
 
               <p className="mt-4 text-xs leading-5 text-[#666970] sm:mt-5">
-                Every clip has a play type. Better plays
-                earn more points and increase your squad
-                score.
+
+                Every clip has a play type. Better moments
+                earn more points and increase the player's
+                private play score.
+
+              </p>
+
+              <p className="mt-3 text-[9px] leading-4 text-[#4E5157]">
+
+                This scoring system is a private community
+                feature and is not connected to official
+                VALORANT competitive ratings.
+
               </p>
 
             </div>
@@ -538,9 +588,11 @@ function Leaderboards() {
 ========================================================= */
 
 function TopPlayer({ player, position }) {
+
   const isFirst = position === 0
 
   return (
+
     <div
       className={`group relative overflow-hidden border bg-[#0D0F12] ${
         isFirst
@@ -574,14 +626,18 @@ function TopPlayer({ player, position }) {
         >
 
           {isFirst ? (
+
             <Trophy
               size={17}
               className="text-white"
             />
+
           ) : (
+
             <span className="font-display text-sm font-bold">
               {String(position + 1).padStart(2, "0")}
             </span>
+
           )}
 
         </div>
@@ -653,7 +709,7 @@ function TopPlayer({ player, position }) {
             </p>
 
             <p className="mt-1 font-display text-[7px] font-bold uppercase tracking-[0.15em] text-[#555960]">
-              VALO SCORE
+              PLAY SCORE
             </p>
 
           </div>
@@ -671,7 +727,9 @@ function TopPlayer({ player, position }) {
 ========================================================= */
 
 function ScoreItem({ icon, name, points }) {
+
   return (
+
     <div className="flex items-center justify-between border border-white/[0.06] bg-[#0D0F12] px-3 py-3 sm:px-4">
 
       <div className="flex items-center gap-2 sm:gap-3">
@@ -691,6 +749,7 @@ function ScoreItem({ icon, name, points }) {
       </span>
 
     </div>
+
   )
 }
 

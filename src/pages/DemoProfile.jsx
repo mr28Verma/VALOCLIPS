@@ -4,17 +4,17 @@ import {
   Upload,
   X,
   Play,
-  Heart,
-  Eye,
   MoreHorizontal,
   Share2,
   Settings,
-  Trophy,
   Users,
-  ChevronRight,
   Flame,
   Clock3,
   Star,
+  Sparkles,
+  Shuffle,
+  Crosshair,
+  XCircle,
 } from "lucide-react"
 import Footer from "../components/Footer"
 
@@ -22,70 +22,54 @@ const clips = [
   {
     id: 1,
     title: "1 HP. 3 KILLS. NO WAY.",
-    image:
-      "https://interfaceingame.com/wp-content/uploads/valorant/valorant-clutch.png",
+    image: "/clip/clutch.png",
     map: "ASCENT",
     agent: "JETT",
-    views: "4.8K",
-    likes: "621",
     type: "Clutch",
     time: "2 days ago",
   },
   {
     id: 2,
     title: "THE CLEANEST OP SHOT",
-    image:
-      "https://cdn.gameboost.com/article-images/2024-10-21/56aab95b-af04-4cf8-b36d-bc5839b4d7bf.webp",
+    image: "/clip/shot.png",
     map: "ICEBOX",
     agent: "JETT",
-    views: "3.2K",
-    likes: "418",
     type: "Highlight",
     time: "4 days ago",
   },
   {
     id: 3,
     title: "THEY REALLY PUSHED ME",
-    image: "https://i.ytimg.com/vi/pVGQuBlo46g/maxresdefault.jpg",
+    image: "/clip/funny.png",
     map: "HAVEN",
     agent: "JETT",
-    views: "2.7K",
-    likes: "306",
     type: "Highlight",
     time: "6 days ago",
   },
   {
     id: 4,
     title: "ACE TO END THE GAME",
-    image:
-      "https://interfaceingame.com/wp-content/uploads/valorant/valorant-clutch.png",
+    image: "/clip/clutch.png",
     map: "BIND",
     agent: "JETT",
-    views: "8.1K",
-    likes: "904",
     type: "Ace",
     time: "1 week ago",
   },
   {
     id: 5,
     title: "ONE TAP AFTER ONE TAP",
-    image:
-      "https://cdn.gameboost.com/article-images/2024-10-21/56aab95b-af04-4cf8-b36d-bc5839b4d7bf.webp",
+    image: "/clip/shot.png",
     map: "SUNSET",
     agent: "JETT",
-    views: "1.9K",
-    likes: "244",
     type: "Highlight",
     time: "1 week ago",
   },
   {
     id: 6,
     title: "LAST ROUND CLUTCH",
-    image: "https://i.ytimg.com/vi/pVGQuBlo46g/maxresdefault.jpg",
+    image: "/clip/funny.png",
     map: "LOTUS",
     agent: "JETT",
-    views: "5.6K",
-    likes: "713",
     type: "Clutch",
     time: "2 weeks ago",
   },
@@ -95,7 +79,7 @@ const squad = [
   {
     name: "ZALZALA",
     tag: "4444",
-    image: "friends/ZALZALA.png",
+    image: "/friends/ZALZALA.png",
     rank: "Bronze 2",
     agent: "SOVA",
     online: true,
@@ -167,49 +151,65 @@ const agents = [
   "Yoru",
 ]
 
-// Riot's official asset CDN, exposed via the public valorant-api.com
-// "competitivetiers" endpoint. Tier indices 0-2 are unused/reserved,
-// 3-26 are Iron 1 through Immortal 3, and 27 is Radiant.
-const RANK_TIER_BASE =
-  "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04"
-
 const ranks = [
-  { name: "Iron 1", icon: `${RANK_TIER_BASE}/3/largeicon.png` },
-  { name: "Iron 2", icon: `${RANK_TIER_BASE}/4/largeicon.png` },
-  { name: "Iron 3", icon: `${RANK_TIER_BASE}/5/largeicon.png` },
+  { name: "Iron 1", icon: "/rank/Iron_1_Rank.webp" },
+  { name: "Iron 2", icon: "/rank/Iron_2_Rank.webp" },
+  { name: "Iron 3", icon: "/rank/Iron_3_Rank.webp" },
 
-  { name: "Bronze 1", icon: `${RANK_TIER_BASE}/6/largeicon.png` },
-  { name: "Bronze 2", icon: `${RANK_TIER_BASE}/7/largeicon.png` },
-  { name: "Bronze 3", icon: `${RANK_TIER_BASE}/8/largeicon.png` },
+  { name: "Bronze 1", icon: "/rank/Bronze_1_Rank.webp" },
+  { name: "Bronze 2", icon: "/rank/Bronze_2_Rank.webp" },
+  { name: "Bronze 3", icon: "/rank/Bronze_3_Rank.webp" },
 
-  { name: "Silver 1", icon: `${RANK_TIER_BASE}/9/largeicon.png` },
-  { name: "Silver 2", icon: `${RANK_TIER_BASE}/10/largeicon.png` },
-  { name: "Silver 3", icon: `${RANK_TIER_BASE}/11/largeicon.png` },
+  { name: "Silver 1", icon: "/rank/Silver_1_Rank.webp" },
+  { name: "Silver 2", icon: "/rank/Silver_2_Rank.webp" },
+  { name: "Silver 3", icon: "/rank/Silver_3_Rank.webp" },
 
-  { name: "Gold 1", icon: `${RANK_TIER_BASE}/12/largeicon.png` },
-  { name: "Gold 2", icon: `${RANK_TIER_BASE}/13/largeicon.png` },
-  { name: "Gold 3", icon: `${RANK_TIER_BASE}/14/largeicon.png` },
+  { name: "Gold 1", icon: "/rank/Gold_1_Rank.webp" },
+  { name: "Gold 2", icon: "/rank/Gold_2_Rank.webp" },
+  { name: "Gold 3", icon: "/rank/Gold_3_Rank.webp" },
 
-  { name: "Platinum 1", icon: `${RANK_TIER_BASE}/15/largeicon.png` },
-  { name: "Platinum 2", icon: `${RANK_TIER_BASE}/16/largeicon.png` },
-  { name: "Platinum 3", icon: `${RANK_TIER_BASE}/17/largeicon.png` },
+  { name: "Platinum 1", icon: "/rank/Platinum_1_Rank.webp" },
+  { name: "Platinum 2", icon: "/rank/Platinum_2_Rank.webp" },
+  { name: "Platinum 3", icon: "/rank/Platinum_3_Rank.webp" },
 
-  { name: "Diamond 1", icon: `${RANK_TIER_BASE}/18/largeicon.png` },
-  { name: "Diamond 2", icon: `${RANK_TIER_BASE}/19/largeicon.png` },
-  { name: "Diamond 3", icon: `${RANK_TIER_BASE}/20/largeicon.png` },
+  { name: "Diamond 1", icon: "/rank/Diamond_1_Rank.webp" },
+  { name: "Diamond 2", icon: "/rank/Diamond_2_Rank.webp" },
+  { name: "Diamond 3", icon: "/rank/Diamond_3_Rank.webp" },
 
-  { name: "Ascendant 1", icon: `${RANK_TIER_BASE}/21/largeicon.png` },
-  { name: "Ascendant 2", icon: `${RANK_TIER_BASE}/22/largeicon.png` },
-  { name: "Ascendant 3", icon: `${RANK_TIER_BASE}/23/largeicon.png` },
+  { name: "Ascendant 1", icon: "/rank/Ascendant_1_Rank.webp" },
+  { name: "Ascendant 2", icon: "/rank/Ascendant_2_Rank.webp" },
+  { name: "Ascendant 3", icon: "/rank/Ascendant_3_Rank.webp" },
 
-  { name: "Immortal 1", icon: `${RANK_TIER_BASE}/24/largeicon.png` },
-  { name: "Immortal 2", icon: `${RANK_TIER_BASE}/25/largeicon.png` },
-  { name: "Immortal 3", icon: `${RANK_TIER_BASE}/26/largeicon.png` },
+  { name: "Immortal 1", icon: "/rank/Immortal_1_Rank.webp" },
+  { name: "Immortal 2", icon: "/rank/Immortal_2_Rank.webp" },
+  { name: "Immortal 3", icon: "/rank/Immortal_3_Rank.webp" },
 
-  { name: "Radiant", icon: `${RANK_TIER_BASE}/27/largeicon.png` },
+  { name: "Radiant", icon: "/rank/Radiant_Rank.webp" },
 ]
 
 const currentRank = "Bronze 2"
+
+const clipMoments = {
+  Clutch: [
+    { label: "PRESSURE", value: 92, text: "Low HP, high pressure." },
+    { label: "AIM", value: 88, text: "Fast crosshair placement." },
+    { label: "DECISION", value: 96, text: "Perfect timing to swing." },
+  ],
+  Highlight: [
+    { label: "AIM", value: 95, text: "Clean mechanical execution." },
+    { label: "TIMING", value: 89, text: "The peek landed perfectly." },
+    { label: "STYLE", value: 93, text: "That one deserved a replay." },
+  ],
+  Ace: [
+    { label: "AIM", value: 98, text: "Five eliminations. No wasted motion." },
+    { label: "CONTROL", value: 94, text: "You controlled the pace." },
+    { label: "IMPACT", value: 100, text: "Round-defining performance." },
+  ],
+}
+
+function getClipMoments(type) {
+  return clipMoments[type] || clipMoments.Highlight
+}
 
 function getRank(rankName) {
   return ranks.find((rank) => rank.name === rankName)
@@ -236,6 +236,7 @@ function RankIcon({ rank, className = "" }) {
 function DemoProfile() {
   const [showUpload, setShowUpload] = useState(false)
   const [activeFilter, setActiveFilter] = useState("All")
+  const [selectedClip, setSelectedClip] = useState(null)
 
   const onlineCount = squad.filter((player) => player.online).length
 
@@ -243,6 +244,12 @@ function DemoProfile() {
     activeFilter === "All"
       ? clips
       : clips.filter((clip) => clip.type === activeFilter.slice(0, -1))
+
+  const openRandomClip = () => {
+    const pool = filteredClips.length ? filteredClips : clips
+    const clip = pool[Math.floor(Math.random() * pool.length)]
+    setSelectedClip(clip)
+  }
 
   return (
     <main className="min-h-screen bg-[#08090B] text-white">
@@ -279,7 +286,7 @@ function DemoProfile() {
             <div className="relative flex items-start justify-center lg:justify-start">
               <div className="absolute -inset-10 bg-[#FF4655]/[0.025] blur-3xl" />
 
-              <div className="relative flex aspect-[280/620] h-[min(72vh,560px)] max-h-[560px] min-h-[360px] sm:h-[min(72vh,620px)] sm:max-h-[620px] sm:min-h-[380px] w-auto items-start justify-center">
+              <div className="relative flex aspect-[280/620] h-[min(72vh,560px)] max-h-[560px] min-h-[360px] w-auto items-start justify-center sm:h-[min(72vh,620px)] sm:max-h-[620px] sm:min-h-[380px]">
                 <div className="absolute left-1/2 top-2 h-1 w-20 -translate-x-1/2 bg-[#FF4655]" />
 
                 <img
@@ -295,7 +302,10 @@ function DemoProfile() {
                     rank={currentRank}
                     className="h-6 w-6 object-contain"
                   />
-                  
+
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-gray-300">
+                    {currentRank}
+                  </span>
                 </div>
               </div>
             </div>
@@ -313,12 +323,12 @@ function DemoProfile() {
 
                   <h1 className="mt-4 text-3xl font-black leading-none tracking-[-0.045em] sm:text-6xl">
                     ZALZALA
-                    <span className="ml-1.5 text-gray-600 sm:ml-2">#4444</span>
+                    <span className="ml-1.5 text-gray-600 sm:ml-2">
+                      #4444
+                    </span>
                   </h1>
 
-                  <p className="mt-2 text-sm text-gray-500">
-                    @saksham
-                  </p>
+                  <p className="mt-2 text-sm text-gray-500">@saksham</p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -340,34 +350,30 @@ function DemoProfile() {
                 </div>
               </div>
 
-              <div className="mt-6 grid max-w-[760px] sm:mt-8 grid-cols-2 border-y border-white/[0.06] sm:grid-cols-4">
-                <div className="border-b border-white/[0.06] px-3 py-4 sm:px-5 sm:py-5 sm:border-b-0 sm:border-r">
+              <div className="mt-6 grid max-w-[760px] grid-cols-2 border-y border-white/[0.06] sm:mt-8 sm:grid-cols-4">
+                <div className="border-b border-white/[0.06] px-3 py-4 sm:border-b-0 sm:border-r sm:px-5 sm:py-5">
                   <p className="text-xl font-bold">128</p>
-
                   <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-gray-600">
                     Clips
                   </p>
                 </div>
 
-                <div className="border-b border-white/[0.06] px-3 py-4 sm:px-5 sm:py-5 sm:border-b-0 sm:border-r">
-                  <p className="text-xl font-bold">24.8K</p>
-
+                <div className="border-b border-white/[0.06] px-3 py-4 sm:border-b-0 sm:border-r sm:px-5 sm:py-5">
+                  <p className="text-xl font-bold">12</p>
                   <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-gray-600">
-                    Views
+                    Aces & Clutches
                   </p>
                 </div>
 
-                <div className="px-3 py-4 sm:px-5 sm:py-5 sm:border-r sm:border-white/[0.06]">
-                  <p className="text-xl font-bold">3.2K</p>
-
+                <div className="px-3 py-4 sm:border-r sm:border-white/[0.06] sm:px-5 sm:py-5">
+                  <p className="text-xl font-bold">7</p>
                   <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-gray-600">
-                    Likes
+                    Best Streak
                   </p>
                 </div>
 
                 <div className="px-3 py-4 sm:px-5 sm:py-5">
                   <p className="text-xl font-bold">5</p>
-
                   <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-gray-600">
                     Squad
                   </p>
@@ -388,16 +394,14 @@ function DemoProfile() {
                       Current Rank
                     </p>
 
-                    <p className="mt-0.5 text-xs font-bold">
-                      Bronze 2
-                    </p>
+                    <p className="mt-0.5 text-xs font-bold">Bronze 2</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 border border-white/[0.06] bg-[#0D0E11] px-4 py-3">
                   <div className="flex h-8 w-8 items-center justify-center overflow-hidden bg-[#FF4655]/10">
                     <img
-                      src="https://media.valorant-api.com/agents/320b2a48-4d9b-a075-30f1-1f93a9b638fa/displayicon.png"
+                      src="sova.png"
                       alt="Sova"
                       className="h-full w-full object-cover"
                     />
@@ -408,9 +412,7 @@ function DemoProfile() {
                       Main Agent
                     </p>
 
-                    <p className="mt-0.5 text-xs font-bold">
-                      Sova
-                    </p>
+                    <p className="mt-0.5 text-xs font-bold">Sova</p>
                   </div>
                 </div>
 
@@ -424,9 +426,7 @@ function DemoProfile() {
                       Best Streak
                     </p>
 
-                    <p className="mt-0.5 text-xs font-bold">
-                      7 clips
-                    </p>
+                    <p className="mt-0.5 text-xs font-bold">7 clips</p>
                   </div>
                 </div>
               </div>
@@ -458,7 +458,7 @@ function DemoProfile() {
           <button
             type="button"
             onClick={() => setShowUpload(true)}
-            className="group relative flex w-full items-center justify-center gap-3 sm:w-fit overflow-hidden bg-[#FF4655] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white"
+            className="group relative flex w-full items-center justify-center gap-3 overflow-hidden bg-[#FF4655] px-5 py-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white sm:w-fit"
           >
             <span className="absolute inset-0 translate-x-[-101%] bg-white/10 transition-transform duration-500 group-hover:translate-x-0" />
 
@@ -484,12 +484,24 @@ function DemoProfile() {
               {filter}
             </button>
           ))}
+
+          <button
+            type="button"
+            onClick={openRandomClip}
+            className="ml-auto flex shrink-0 items-center gap-2 border border-white/[0.08] bg-white/[0.02] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-gray-500 transition hover:border-[#FF4655]/40 hover:text-white"
+          >
+            <Shuffle size={13} />
+            Surprise Me
+          </button>
         </div>
 
         {filteredClips.length > 0 && (
           <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-5 lg:grid-cols-2">
-            <article className="group relative overflow-hidden border border-white/[0.07] bg-[#101115] lg:row-span-2">
-              <div className="relative aspect-[16/10] h-full min-h-[300px] sm:min-h-[360px] overflow-hidden">
+            <article
+              onClick={() => setSelectedClip(filteredClips[0])}
+              className="group relative cursor-pointer overflow-hidden border border-white/[0.07] bg-[#101115] lg:row-span-2"
+            >
+              <div className="relative aspect-[16/10] h-full min-h-[300px] overflow-hidden sm:min-h-[360px]">
                 <img
                   src={filteredClips[0].image}
                   alt={filteredClips[0].title}
@@ -511,7 +523,12 @@ function DemoProfile() {
 
                 <button
                   type="button"
-                  className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#FF4655] opacity-0 shadow-[0_0_35px_rgba(255,70,85,0.3)] transition-all duration-300 group-hover:opacity-100"
+                  aria-label="Explore featured clip"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    setSelectedClip(filteredClips[0])
+                  }}
+                  className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#FF4655] opacity-100 shadow-[0_0_35px_rgba(255,70,85,0.3)] transition-all duration-300 sm:opacity-0 sm:group-hover:opacity-100"
                 >
                   <Play size={21} fill="currentColor" />
                 </button>
@@ -525,18 +542,14 @@ function DemoProfile() {
                     {filteredClips[0].title}
                   </h3>
 
-                  <div className="mt-3 flex flex-wrap items-center gap-3 text-[9px] sm:mt-4 sm:gap-5 sm:text-[10px] text-gray-400">
-                    <span className="flex items-center gap-1.5">
-                      <Eye size={12} />
-                      {filteredClips[0].views}
+                  <div className="mt-3 flex flex-wrap items-center gap-2 text-[9px] text-gray-400 sm:mt-4 sm:gap-3 sm:text-[10px]">
+                    <span className="border border-white/[0.08] bg-white/[0.03] px-2 py-1">
+                      {filteredClips[0].type}
                     </span>
-
-                    <span className="flex items-center gap-1.5">
-                      <Heart size={12} />
-                      {filteredClips[0].likes}
+                    <span className="border border-white/[0.08] bg-white/[0.03] px-2 py-1">
+                      {filteredClips[0].agent}
                     </span>
-
-                    <span className="flex items-center gap-1.5">
+                    <span className="flex items-center gap-1.5 text-gray-500">
                       <Clock3 size={12} />
                       {filteredClips[0].time}
                     </span>
@@ -549,7 +562,8 @@ function DemoProfile() {
               {filteredClips.slice(1, 5).map((clip) => (
                 <article
                   key={clip.id}
-                  className="group overflow-hidden border border-white/[0.07] bg-[#101115]"
+                  onClick={() => { setSelectedClip(clip); }}
+                  className="group cursor-pointer overflow-hidden border border-white/[0.07] bg-[#101115]"
                 >
                   <div className="relative aspect-video overflow-hidden">
                     <img
@@ -572,15 +586,13 @@ function DemoProfile() {
 
                     <button
                       type="button"
-                      className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#FF4655] opacity-0 transition group-hover:opacity-100"
+                      onClick={(event) => { event.stopPropagation(); setSelectedClip(clip); }}
+                      className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#FF4655] opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100"
                     >
                       <Play size={15} fill="currentColor" />
                     </button>
 
-                    <span className="absolute bottom-3 right-3 flex items-center gap-1 text-[9px] text-gray-300">
-                      <Eye size={11} />
-                      {clip.views}
-                    </span>
+
                   </div>
 
                   <div className="p-4">
@@ -593,10 +605,14 @@ function DemoProfile() {
                         {clip.type}
                       </span>
 
-                      <span className="flex items-center gap-1 text-[9px] text-gray-600">
-                        <Heart size={11} />
-                        {clip.likes}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={(event) => { event.stopPropagation(); setSelectedClip(clip); }}
+                        className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-gray-600 transition hover:text-[#FF4655]"
+                      >
+                        <Crosshair size={11} />
+                        Explore
+                      </button>
                     </div>
                   </div>
                 </article>
@@ -650,7 +666,7 @@ function DemoProfile() {
                   <div className="absolute left-0 right-0 top-0 z-20 h-[2px] bg-[#FF4655]" />
                 )}
 
-                <div className="relative h-[165px] overflow-hidden sm:h-[190px] bg-[#0B0C0F]">
+                <div className="relative h-[165px] overflow-hidden bg-[#0B0C0F] sm:h-[190px]">
                   <img
                     src={player.image}
                     alt={player.name}
@@ -665,7 +681,7 @@ function DemoProfile() {
 
                   <div className="absolute left-3 top-3 flex items-center gap-2">
                     <span
-                      className={`h-1.5 w-1.5 rounded-full ${
+                      className={`h-1.5 w-1.5 ${
                         player.online ? "bg-[#4ADE80]" : "bg-gray-700"
                       }`}
                     />
@@ -750,9 +766,95 @@ function DemoProfile() {
         </div>
       </section>
 
+      {selectedClip && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/85 px-3 py-4 backdrop-blur-md sm:px-5 sm:py-8"
+          onClick={() => setSelectedClip(null)}
+        >
+          <div
+            className="relative w-full max-w-[900px] overflow-hidden border border-white/[0.09] bg-[#0D0E11] shadow-2xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setSelectedClip(null)}
+              className="absolute right-3 top-3 z-20 flex h-10 w-10 items-center justify-center border border-white/[0.1] bg-black/60 text-gray-400 backdrop-blur transition hover:text-white"
+              aria-label="Close clip"
+            >
+              <XCircle size={18} />
+            </button>
+
+            <div className="grid lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="relative aspect-video overflow-hidden bg-black lg:aspect-auto lg:min-h-[430px]">
+                <img src={selectedClip.image} alt={selectedClip.title} className="h-full w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+                <div className="absolute bottom-5 left-5 right-5 sm:bottom-7 sm:left-7">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#FF4655]">
+                    {selectedClip.map} · {selectedClip.agent}
+                  </p>
+                  <h3 className="mt-2 max-w-[650px] text-2xl font-black uppercase leading-tight sm:text-4xl">
+                    {selectedClip.title}
+                  </h3>
+                </div>
+              </div>
+
+              <div className="p-5 sm:p-7">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={15} className="text-[#FF4655]" />
+                  <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#FF4655]">
+                    MOMENT BREAKDOWN
+                  </p>
+                </div>
+
+                <p className="mt-3 text-sm leading-6 text-gray-500">
+                  A quick read on what makes this round stand out.
+                </p>
+
+                <div className="mt-6 space-y-5">
+                  {getClipMoments(selectedClip.type).map((moment) => (
+                    <div key={moment.label}>
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-[9px] font-bold uppercase tracking-[0.16em] text-gray-500">
+                          {moment.label}
+                        </span>
+                        <span className="text-xs font-black text-white">{moment.value}%</span>
+                      </div>
+                      <div className="h-1.5 overflow-hidden bg-white/[0.06]">
+                        <div className="h-full bg-[#FF4655] transition-all duration-700" style={{ width: `${moment.value}%` }} />
+                      </div>
+                      <p className="mt-2 text-[10px] leading-5 text-gray-600">{moment.text}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-7 grid grid-cols-2 gap-2">
+                  <div className="border border-white/[0.06] bg-white/[0.02] p-3">
+                    <p className="text-[8px] uppercase tracking-wider text-gray-600">Type</p>
+                    <p className="mt-1 text-xs font-bold">{selectedClip.type}</p>
+                  </div>
+                  <div className="border border-white/[0.06] bg-white/[0.02] p-3">
+                    <p className="text-[8px] uppercase tracking-wider text-gray-600">Time</p>
+                    <p className="mt-1 text-xs font-bold">{selectedClip.time}</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={openRandomClip}
+                  className="mt-4 flex w-full items-center justify-center gap-2 bg-[#FF4655] py-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#E83F4D]"
+                >
+                  <Shuffle size={14} />
+                  Find Another Moment
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showUpload && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 px-3 py-4 sm:px-5 sm:py-6 backdrop-blur-md">
-          <div className="w-full max-w-[600px] max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-h-[calc(100vh-3rem)] border border-white/[0.08] bg-[#101115] shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/80 px-3 py-4 backdrop-blur-md sm:px-5 sm:py-6">
+          <div className="max-h-[calc(100vh-2rem)] w-full max-w-[600px] overflow-y-auto border border-white/[0.08] bg-[#101115] shadow-2xl sm:max-h-[calc(100vh-3rem)]">
             <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-4 sm:px-6 sm:py-5">
               <div>
                 <div className="flex items-center gap-2">
@@ -778,7 +880,7 @@ function DemoProfile() {
             </div>
 
             <div className="p-4 sm:p-6">
-              <label className="group flex min-h-[180px] cursor-pointer sm:min-h-[220px] flex-col items-center justify-center border border-dashed border-white/[0.12] bg-[#0B0C0F] transition hover:border-[#FF4655]/50">
+              <label className="group flex min-h-[180px] cursor-pointer flex-col items-center justify-center border border-dashed border-white/[0.12] bg-[#0B0C0F] transition hover:border-[#FF4655]/50 sm:min-h-[220px]">
                 <input
                   type="file"
                   accept="video/*"

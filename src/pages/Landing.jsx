@@ -9,16 +9,17 @@ import {
   Eye,
   Upload,
   Sparkles,
+  Link2,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import Footer from "../components/Footer"
 
 const heroImages = [
-  "https://wiki.playvalorant.com/en-us/images/Episode_3_-_Reflection.png",
-  "https://wiki.playvalorant.com/en-us/images/GaqftaGWMAAySJl.jpg",
-  "https://wiki.playvalorant.com/en-us/images/GXOukPBbgAAcj1E.jpg",
-  "https://wiki.playvalorant.com/en-us/images/Never_Fight_Alone_Harmonize.png",
-  "https://wiki.playvalorant.com/en-us/images/%C4%B0K%C4%B0_D%C3%9CNYA_Clove_Ajan_Tan%C4%B1t%C4%B1m%C4%B1_-_VALORANT_-_YouTube_-_0-0-17.jpeg",
+  "/hero/hero1.png",
+  "/hero/hero2.png",
+  "/hero/hero3.png",
+  "/hero/hero4.png",
+  "/hero/hero5.png",
 ]
 
 const features = [
@@ -201,6 +202,7 @@ function Landing() {
 
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0D] via-transparent to-[#0A0A0D]/20" />
 
+
         {/* Hero content */}
 
         <div className="relative mx-auto flex min-h-[620px] max-w-[1400px] items-center px-5 py-16 sm:min-h-[680px] sm:px-6 lg:px-10">
@@ -219,6 +221,7 @@ function Landing() {
 
             </div>
 
+
             {/* Heading */}
 
             <h1 className="font-display text-[44px] font-black uppercase leading-[0.9] tracking-[-0.045em] sm:text-6xl lg:text-[82px]">
@@ -233,6 +236,7 @@ function Landing() {
 
             </h1>
 
+
             {/* Description */}
 
             <p className="mt-6 max-w-[540px] text-[13px] leading-6 text-gray-400 sm:mt-8 sm:text-base sm:leading-7">
@@ -240,6 +244,7 @@ function Landing() {
               account, find your squad, and turn your VALORANT clips into
               your own personal feed.
             </p>
+
 
             {/* Buttons */}
 
@@ -251,14 +256,16 @@ function Landing() {
                 to="/profile"
                 className="inline-flex w-full items-center justify-center gap-3 bg-[#FF4655] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#e63e4c] sm:w-auto"
               >
-                <img
-                  src="/riot.png"
-                  alt=""
-                  className="h-5 w-5 object-contain"
+
+                <Link2
+                  size={18}
+                  strokeWidth={2}
                 />
 
                 Connect with Riot
+
               </Link>
+
 
               {/* SEE HOW IT WORKS */}
 
@@ -271,6 +278,7 @@ function Landing() {
               </button>
 
             </div>
+
 
             {/* Mini stats */}
 
@@ -346,6 +354,7 @@ function Landing() {
                 scrolling through random clips, see your own uploads and the
                 moments your squad is sharing.
               </p>
+
 
               {/* Friends */}
 
@@ -615,6 +624,7 @@ function Landing() {
                 <div className="mt-6 grid grid-cols-3 border-y border-white/[0.06] py-5 sm:mt-7">
 
                   <div>
+
                     <p className="text-lg font-bold text-white">
                       0
                     </p>
@@ -622,9 +632,11 @@ function Landing() {
                     <p className="mt-1 text-[9px] text-gray-600 sm:text-[10px]">
                       Clips
                     </p>
+
                   </div>
 
                   <div>
+
                     <p className="text-lg font-bold text-white">
                       0
                     </p>
@@ -632,9 +644,11 @@ function Landing() {
                     <p className="mt-1 text-[9px] text-gray-600 sm:text-[10px]">
                       Friends
                     </p>
+
                   </div>
 
                   <div>
+
                     <p className="text-lg font-bold text-white">
                       0
                     </p>
@@ -642,6 +656,7 @@ function Landing() {
                     <p className="mt-1 text-[9px] text-gray-600 sm:text-[10px]">
                       Favorites
                     </p>
+
                   </div>
 
                 </div>
@@ -707,10 +722,9 @@ function Landing() {
               className="mt-7 inline-flex w-full items-center justify-center gap-3 bg-[#FF4655] px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#e63e4c] sm:mt-8 sm:w-auto"
             >
 
-              <img
-                src="/riot.png"
-                alt=""
-                className="h-5 w-5 object-contain"
+              <Link2
+                size={18}
+                strokeWidth={2}
               />
 
               Connect with Riot
@@ -743,4 +757,4 @@ function ShieldIcon() {
   )
 }
 
-export default Landing
+export default Landing 

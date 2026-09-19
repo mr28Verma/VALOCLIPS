@@ -1,4 +1,9 @@
-import { ArrowUpRight, Users, ExternalLink } from "lucide-react"
+import {
+  ArrowUpRight,
+  Users,
+  ExternalLink,
+  Link2,
+} from "lucide-react"
 import { Link } from "react-router-dom"
 
 const columns = [
@@ -32,13 +37,19 @@ function Footer() {
   return (
     <footer className="relative overflow-hidden border-t border-white/[0.07] bg-[#08090B]">
 
-      {/* TOP ACCENT */}
+      {/* =====================================================
+          TOP ACCENT
+      ====================================================== */}
 
       <div className="absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-[#FF4655]/50 to-transparent" />
 
-      {/* BACKGROUND GLOW */}
+
+      {/* =====================================================
+          BACKGROUND GLOW
+      ====================================================== */}
 
       <div className="pointer-events-none absolute -bottom-32 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-[#FF4655]/[0.035] blur-3xl" />
+
 
       <div className="relative mx-auto max-w-[1400px] px-5 sm:px-6 lg:px-10">
 
@@ -76,17 +87,19 @@ function Footer() {
             </p>
 
 
-            {/* CONNECT RIOT */}
+            {/* =================================================
+                CONNECT RIOT
+            ================================================== */}
 
             <Link
               to="/profile"
               className="group mt-6 inline-flex items-center gap-2.5 border border-white/[0.08] bg-[#0D0E11] px-4 py-2.5 font-display text-[9px] font-bold uppercase tracking-[0.12em] text-[#B7B9BD] transition-all duration-200 hover:border-[#FF4655]/40 hover:bg-[#111216] hover:text-white"
             >
 
-              <img
-                src="/riot.png"
-                alt="Riot"
-                className="h-[15px] w-[15px] object-contain"
+              <Link2
+                size={15}
+                strokeWidth={2}
+                className="text-[#FF4655]"
               />
 
               <span>
@@ -105,7 +118,7 @@ function Footer() {
 
           {/* =================================================
               FOOTER COLUMNS
-          ================================================= */}
+          ================================================== */}
 
           {columns.map((column) => (
             <div key={column.heading}>
@@ -131,9 +144,11 @@ function Footer() {
 
                     {link.external ? (
 
-                      <a
-                        href="#"
-                        onClick={(e) => e.preventDefault()}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Add your real Discord/Twitter URL here later.
+                        }}
                         className="group inline-flex items-center gap-1.5 font-display text-[11px] text-[#666970] transition-colors duration-200 hover:text-white"
                       >
 
@@ -146,7 +161,7 @@ function Footer() {
                           className="opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-70"
                         />
 
-                      </a>
+                      </button>
 
                     ) : (
 
