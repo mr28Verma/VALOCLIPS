@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 86" width="430" height="86" fill="none">
+  <defs>
+    <style>
+      .white {
+        fill: #ffffff;
+      }
+
+      .red {
+        fill: #ff4655;
+      }
+
+      .wordmark {
+        font-family: "Space Grotesk", "Arial Black", Arial, sans-serif;
+        font-weight: 900;
+        font-style: italic;
+      }
+    </style>
+  </defs>
+
+  <!-- ================= SYMBOL ================= -->
+
+  <g transform="translate(2 4) scale(0.68)">
+
+    <!-- Left blade -->
+    <polygon class="white" points="0,0 32,0 60,70 28,70"></polygon>
+
+    <!-- Red inner blade -->
+    <polygon class="red" points="38,0 80,50 48,110 24,110 46,55"></polygon>
+
+    <!-- Right blade -->
+    <polygon class="white" points="88,0 120,0 76,110 44,110 74,38"></polygon>
+
+  </g>
+
+  <!-- ================= WORDMARK ================= -->
+
+  <text x="95" y="58" class="wordmark" font-size="52" letter-spacing="-2.5">
+    <tspan class="white">valo</tspan><tspan class="red">Clips</tspan>
+  </text>
+
+</svg>

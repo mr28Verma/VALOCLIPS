@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #08090b;
+  color: white;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img,
+video {
+  max-width: 100%;
+}
+
+button,
+a,
+input {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================================
+   CUSTOM SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #08090b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #25272c;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff4655;
+}
+
+/* =========================================================
+   MOBILE TEXT SELECTION
+========================================================= */
+
+::selection {
+  background: #ff4655;
+  color: white;
+}
+
+/* =========================================================
+   FONT
+========================================================= */
+
+.font-display {
+  font-family:
+    "Space Grotesk",
+    "Inter",
+    "Arial",
+    sans-serif;
+}
+
+/* =========================================================
+   MOBILE UTILITIES
+========================================================= */
+
+@media (max-width: 640px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+/* =========================================================
+   REDUCE MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
