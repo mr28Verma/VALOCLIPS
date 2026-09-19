@@ -151,7 +151,7 @@ function Landing() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       setHeroIndex((current) => (current + 1) % heroImages.length)
-    }, 1000)
+    }, 20000)
 
     return () => clearTimeout(timeout)
   }, [heroIndex])
