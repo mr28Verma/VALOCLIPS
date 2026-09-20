@@ -50,31 +50,28 @@ const previewClips = [
   {
     id: 1,
     image:
-      "https://interfaceingame.com/wp-content/uploads/valorant/valorant-clutch.png",
+      "/clip/ace.jpg",
     title: "MY CLEANEST CLUTCH",
     player: "LOVEDAY",
-    agent: "Reyna",
-    views: "2.4K",
-    likes: "318",
+    agent: "Jett",
+    
   },
   {
     id: 2,
     image:
-      "https://cdn.gameboost.com/article-images/2024-10-21/56aab95b-af04-4cf8-b36d-bc5839b4d7bf.webp",
+      "/clip/clutch.png",
     title: "NO WAY THAT HIT",
     player: "Mogambo",
     agent: "Sage",
-    views: "3.8K",
-    likes: "482",
+    
   },
   {
     id: 3,
-    image: "https://i.ytimg.com/vi/pVGQuBlo46g/maxresdefault.jpg",
+    image: "/clip/funny.png",
     title: "FUNNY MOMENT",
     player: "You",
     agent: "Sova",
-    views: "2.9K",
-    likes: "391",
+    
   },
 ]
 
@@ -82,17 +79,17 @@ const friendAvatars = [
   {
     name: "Reyna",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQy8OfswGow32Xgm_Nx2AqR7TqpSNlThvwjcX4oMQvOQg&s=10",
+      "reyna.jpg",
   },
   {
     name: "Sage",
     image:
-      "https://media.valorant-api.com/agents/569fdd95-4d10-43ab-ca70-79becc718b46/displayicon.png",
+      "sage.png",
   },
   {
     name: "Clove",
     image:
-      "https://www.pngall.com/wp-content/uploads/18/Clove-Valorant-Character-Art-PNG-thumb.png",
+      "clove.png",
   },
 ]
 
@@ -372,7 +369,7 @@ function Landing() {
                   ))}
 
                   <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#0D0E11] bg-[#FF4655] text-[9px] font-bold text-white">
-                    +5
+                    +2
                   </div>
 
                 </div>
@@ -742,7 +739,7 @@ function Landing() {
 
       {/* FOOTER */}
 
-      <Footer />
+     
 
     </main>
   )

@@ -243,21 +243,19 @@ function Agents() {
                 <button
                   key={role}
                   onClick={() => setActiveRole(role)}
-                  className={`group relative flex shrink-0 items-center gap-2 px-4 py-2.5 font-display text-[9px] font-bold tracking-[0.1em] transition sm:gap-2.5 sm:px-5 sm:text-[10px] sm:tracking-[0.12em] ${
-                    active
+                  className={`group relative flex shrink-0 items-center gap-2 px-4 py-2.5 font-display text-[9px] font-bold tracking-[0.1em] transition sm:gap-2.5 sm:px-5 sm:text-[10px] sm:tracking-[0.12em] ${active
                       ? "bg-[#FF4655] text-white"
                       : "border border-white/[0.07] bg-[#0C0E11] text-[#686B73] hover:border-white/[0.14] hover:text-white"
-                  }`}
+                    }`}
                 >
                   {iconSrc && (
                     <img
                       src={iconSrc}
                       alt=""
-                      className={`h-4 w-4 transition ${
-                        active
+                      className={`h-4 w-4 transition ${active
                           ? "brightness-0 invert"
                           : "opacity-60 invert group-hover:opacity-100"
-                      }`}
+                        }`}
                     />
                   )}
                   <span>{role}</span>
@@ -295,21 +293,19 @@ function Agents() {
               <button
                 key={agent.name}
                 onClick={() => setSelectedAgent(agent)}
-                className={`group relative aspect-[0.78] min-h-0 overflow-hidden border text-left transition-all duration-300 ${
-                  selected
+                className={`group relative aspect-[0.78] min-h-0 overflow-hidden border text-left transition-all duration-300 ${selected
                     ? "border-[#FF4655] bg-[#151014]"
                     : "border-white/[0.06] bg-[#0D0F12] hover:border-[#FF4655]/60"
-                }`}
+                  }`}
               >
                 {/* BACKGROUND ART */}
                 <img
                   src={`/agent/background/${agent.folder}.png`}
                   alt=""
-                  className={`absolute inset-0 h-full w-full object-cover transition duration-500 ${
-                    selected
+                  className={`absolute inset-0 h-full w-full object-cover transition duration-500 ${selected
                       ? "scale-105 opacity-35"
                       : "scale-100 opacity-20 group-hover:scale-105 group-hover:opacity-30"
-                  }`}
+                    }`}
                 />
 
                 {/* PORTRAIT */}
@@ -317,11 +313,10 @@ function Agents() {
                   <img
                     src={`/agent/picture/${agent.folder}.png`}
                     alt={agent.name}
-                    className={`h-full w-full object-contain object-bottom transition duration-300 ${
-                      selected
+                    className={`h-full w-full object-contain object-bottom transition duration-300 ${selected
                         ? "scale-[1.04] opacity-100"
                         : "opacity-80 group-hover:scale-[1.03] group-hover:opacity-100"
-                    }`}
+                      }`}
                   />
                 </div>
 
@@ -349,9 +344,8 @@ function Agents() {
                 {/* NAME */}
                 <div className="absolute inset-x-2.5 bottom-2.5 sm:inset-x-3 sm:bottom-3">
                   <p
-                    className={`font-display text-[10px] font-bold uppercase tracking-[0.02em] min-[380px]:text-[11px] sm:text-[12px] ${
-                      selected ? "text-white" : "text-gray-300"
-                    }`}
+                    className={`font-display text-[10px] font-bold uppercase tracking-[0.02em] min-[380px]:text-[11px] sm:text-[12px] ${selected ? "text-white" : "text-gray-300"
+                      }`}
                   >
                     {agent.name}
                   </p>
@@ -363,11 +357,10 @@ function Agents() {
 
                 {/* HOVER LINE */}
                 <div
-                  className={`absolute bottom-0 left-0 h-[2px] bg-[#FF4655] transition-all ${
-                    selected
+                  className={`absolute bottom-0 left-0 h-[2px] bg-[#FF4655] transition-all ${selected
                       ? "w-full"
                       : "w-0 group-hover:w-full"
-                  }`}
+                    }`}
                 />
               </button>
             )
@@ -508,10 +501,10 @@ function Agents() {
 
           <div className="mt-6 grid gap-3 sm:mt-7 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              "/clips/clip-1.jpg",
-              "/clips/clip-2.jpg",
-              "/clips/clip-3.jpg",
-              "/clips/clip-4.jpg",
+              "/clip/clutch.png",
+              "/clip/funny.png",
+              "/clip/shot.png",
+              "/clip/ace.jpg"
             ].map((clip, index) => {
               const isFailed = failedClips[clip]
 

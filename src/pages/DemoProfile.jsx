@@ -953,7 +953,7 @@ function DemoProfile() {
         </div>
       )}
 
-      <Footer />
+      
     </main>
   )
 }

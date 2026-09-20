@@ -12,6 +12,8 @@ import Landing from "./pages/Landing"
 import DemoProfile from "./pages/DemoProfile"
 import Agents from "./pages/Agents"
 import Leaderboards from "./pages/Leaderboard"
+import LegalPage from "./pages/LegalPage"
+import Footer from "./components/Footer"
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -44,8 +46,13 @@ function App() {
         <Route path="/profile" element={<DemoProfile />} />
         <Route path="/agents" element={<Agents />} />
         <Route path="/leaderboards" element={<Leaderboards />} />
+        <Route path="/privacy" element={<LegalPage />} />
+        <Route path="/terms" element={<LegalPage />} />
+        <Route path="/dmca" element={<LegalPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      <Footer user={user} />
     </BrowserRouter>
   )
 }
