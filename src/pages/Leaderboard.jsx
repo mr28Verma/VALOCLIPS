@@ -5,32 +5,15 @@ import {
   Target,
   Shield,
   Brain,
-  Info,
+  Sparkles,
 } from "lucide-react"
 
 /* =========================================================
-   PRIVATE CLIP SCORING
-   ---------------------------------------------------------
-   This score is only for the private valoClips community.
-   It is NOT an official VALORANT rank, MMR, or ELO.
-========================================================= */
-
-const PLAY_POINTS = {
-  Highlight: 10,
-  "2K": 15,
-  "3K": 30,
-  "4K": 50,
-  "1v2 Clutch": 40,
-  "1v3 Clutch": 60,
-  "1v4 Clutch": 80,
-  "1v5 Clutch": 100,
-  Ace: 100,
-  "Insane Shot": 20,
-  "Big Brain": 20,
-}
-
-/* =========================================================
    YOUR 5 FRIENDS
+   ---------------------------------------------------------
+   These are community clip statistics only.
+   They are NOT used to calculate rank, MMR, ELO,
+   or any official VALORANT skill rating.
 ========================================================= */
 
 const friends = [
@@ -146,30 +129,36 @@ const friends = [
 ]
 
 /* =========================================================
-   CALCULATE PLAY SCORE
+   PREPARE COMMUNITY STATS
 ========================================================= */
 
-function calculateScore(plays) {
-  return Object.entries(plays).reduce(
-    (total, [type, count]) => {
-      return total + (PLAY_POINTS[type] || 0) * count
-    },
-    0
-  )
-}
-
 function preparePlayers() {
-  return friends
-    .map((player) => ({
-      ...player,
-      score: calculateScore(player.plays),
+  return friends.map((player) => {
+    const totalHighlights = Object.values(player.plays).reduce(
+      (total, count) => total + count,
+      0
+    )
 
-      totalPlays: Object.values(player.plays).reduce(
-        (total, count) => total + count,
-        0
-      ),
-    }))
-    .sort((a, b) => b.score - a.score)
+    const aces = player.plays.Ace || 0
+    const clutches =
+      (player.plays["1v2 Clutch"] || 0) +
+      (player.plays["1v3 Clutch"] || 0) +
+      (player.plays["1v4 Clutch"] || 0) +
+      (player.plays["1v5 Clutch"] || 0)
+
+    const multikills =
+      (player.plays["2K"] || 0) +
+      (player.plays["3K"] || 0) +
+      (player.plays["4K"] || 0)
+
+    return {
+      ...player,
+      totalHighlights,
+      aces,
+      clutches,
+      multikills,
+    }
+  })
 }
 
 /* =========================================================
@@ -177,13 +166,10 @@ function preparePlayers() {
 ========================================================= */
 
 function Leaderboards() {
-  const rankedFriends = useMemo(
+  const players = useMemo(
     () => preparePlayers(),
     []
   )
-
-  const topThree = rankedFriends.slice(0, 3)
-  const remainingPlayers = rankedFriends.slice(3)
 
   return (
     <main className="min-h-screen bg-[#08090B] text-white">
@@ -211,20 +197,24 @@ function Leaderboards() {
               </div>
 
               <h1 className="mt-3 font-display text-4xl font-bold uppercase tracking-[-0.05em] sm:mt-4 sm:text-6xl">
-                Top
+
+                Best
                 <span className="text-[#FF4655]">
-                  {" "}plays.
+                  {" "}moments.
                 </span>
+
               </h1>
 
               <p className="mt-4 max-w-xl text-xs leading-5 text-[#70737B] sm:mt-5 sm:text-sm sm:leading-6">
-                Five players. One private space. Let the clips
-                decide who is making the biggest moments.
+
+                A private space to celebrate the best
+                gameplay moments from the squad.
+
               </p>
 
             </div>
 
-            {/* FIVE FRIENDS */}
+            {/* FRIEND COUNT */}
 
             <div className="self-start text-left sm:self-auto sm:text-right">
 
@@ -245,78 +235,69 @@ function Leaderboards() {
       </section>
 
       {/* =====================================================
-          INFORMATION NOTICE
+          COMMUNITY NOTICE
       ====================================================== */}
 
       <section className="mx-auto max-w-[1400px] px-4 pt-6 sm:px-6 sm:pt-8 lg:px-10">
 
-        <div className="flex gap-3 border border-white/[0.06] bg-[#0B0D10] px-4 py-3.5 sm:px-5">
+        <div className="border border-white/[0.06] bg-[#0B0D10] px-4 py-4 sm:px-5">
 
-          <Info
-            size={15}
-            className="mt-0.5 shrink-0 text-[#FF4655]"
-          />
+          <div className="flex gap-3">
 
-          <p className="text-[10px] leading-5 text-[#666970] sm:text-xs">
+            <Sparkles
+              size={15}
+              className="mt-0.5 shrink-0 text-[#FF4655]"
+            />
 
-            <span className="font-semibold text-[#A0A3AA]">
-              Private play scoring:
-            </span>{" "}
+            <div>
 
-            Points are used only for this private clip community.
-            They do not represent official VALORANT rank, MMR,
-            ELO, skill rating, or competitive ranking.
+              <p className="font-display text-[9px] font-bold uppercase tracking-[0.14em] text-[#A0A3AA]">
+                Community highlights
+              </p>
 
-          </p>
+              <p className="mt-1 text-[10px] leading-5 text-[#666970] sm:text-xs">
+
+                These statistics describe clips and memorable
+                gameplay moments shared within the community.
+                They are not an official VALORANT ranking,
+                MMR, ELO, or skill rating.
+
+              </p>
+
+            </div>
+
+          </div>
 
         </div>
 
       </section>
 
       {/* =====================================================
-          TOP 3
+          FEATURED PLAYERS
       ====================================================== */}
 
       <section className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 sm:py-12 lg:px-10">
 
-        <div className="mb-5 flex items-end justify-between gap-4 sm:mb-6">
+        <div className="mb-5">
 
-          <div>
+          <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-[#555960]">
+            COMMUNITY MOMENTS
+          </p>
 
-            <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-[#555960]">
-              TOP MOMENTS
-            </p>
-
-            <h2 className="mt-2 font-display text-xl font-bold uppercase tracking-[-0.02em]">
-              Leading players
-            </h2>
-
-          </div>
-
-          <div className="flex items-center gap-2">
-
-            <Trophy
-              size={13}
-              className="text-[#FF4655]"
-            />
-
-            <span className="font-display text-[8px] font-bold uppercase tracking-[0.15em] text-[#555960]">
-              PLAY SCORE
-            </span>
-
-          </div>
+          <h2 className="mt-2 font-display text-xl font-bold uppercase tracking-[-0.02em]">
+            Featured players
+          </h2>
 
         </div>
 
-        {/* TOP THREE */}
-
         <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
 
-          {topThree.map((player, index) => (
+          {players.slice(0, 3).map((player, index) => (
 
-            <TopPlayer
+            <PlayerCard
               key={player.name}
               player={player}
+              featured
               position={index}
             />
 
@@ -327,7 +308,7 @@ function Leaderboards() {
       </section>
 
       {/* =====================================================
-          #4 + #5
+          OTHER PLAYERS
       ====================================================== */}
 
       <section className="mx-auto max-w-[1400px] px-4 pb-10 sm:px-6 sm:pb-14 lg:px-10">
@@ -335,119 +316,29 @@ function Leaderboards() {
         <div className="mb-5">
 
           <p className="font-display text-[10px] font-bold uppercase tracking-[0.18em] text-[#555960]">
-            OTHER PLAYERS
+            THE REST OF THE SQUAD
           </p>
 
         </div>
 
         <div className="overflow-hidden border border-white/[0.06] bg-[#0B0D10]">
 
-          {remainingPlayers.map((player, index) => {
+          {players.slice(3).map((player, index) => (
 
-            const position = index + 4
+            <PlayerRow
+              key={player.name}
+              player={player}
+              position={index + 4}
+            />
 
-            return (
-
-              <div
-                key={player.name}
-                className="group flex items-center gap-2.5 border-b border-white/[0.06] px-3 py-4 transition last:border-b-0 hover:bg-white/[0.025] sm:gap-4 sm:px-5 sm:py-5"
-              >
-
-                {/* POSITION */}
-
-                <div className="flex w-6 shrink-0 justify-center sm:w-8">
-
-                  <span className="font-display text-xs font-bold text-[#555960] sm:text-sm">
-                    {String(position).padStart(2, "0")}
-                  </span>
-
-                </div>
-
-                {/* PLAYER */}
-
-                <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-4">
-
-                  <div className="h-10 w-10 shrink-0 overflow-hidden border border-white/[0.08] bg-[#111317] sm:h-12 sm:w-12">
-
-                    <img
-                      src={player.image}
-                      alt={player.name}
-                      className="h-full w-full object-cover"
-                    />
-
-                  </div>
-
-                  <div className="min-w-0">
-
-                    <p className="truncate font-display text-sm font-bold text-white">
-
-                      {player.name}
-
-                      <span className="ml-1 text-[#555960]">
-                        #{player.tag}
-                      </span>
-
-                    </p>
-
-                    <div className="mt-1 flex flex-wrap items-center gap-1.5 sm:mt-1.5 sm:gap-2">
-
-                      <span className="font-display text-[8px] font-bold uppercase tracking-[0.12em] text-[#FF4655]">
-                        {player.agent}
-                      </span>
-
-                      <span className="text-[#33363B]">
-                        •
-                      </span>
-
-                      <span className="font-display text-[8px] font-bold uppercase tracking-[0.1em] text-[#666970]">
-                        {player.rank}
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-                {/* PLAYS */}
-
-                <div className="hidden w-20 sm:block">
-
-                  <p className="font-display text-xs font-bold text-white sm:text-sm">
-                    {player.totalPlays}
-                  </p>
-
-                  <p className="mt-1 font-display text-[7px] font-bold uppercase tracking-[0.14em] text-[#555960]">
-                    PLAYS
-                  </p>
-
-                </div>
-
-                {/* SCORE */}
-
-                <div className="w-14 shrink-0 text-right sm:w-20">
-
-                  <p className="font-display text-xs font-bold text-[#FF4655] sm:text-sm">
-                    {player.score}
-                  </p>
-
-                  <p className="mt-1 font-display text-[7px] font-bold uppercase tracking-[0.14em] text-[#555960]">
-                    PLAY SCORE
-                  </p>
-
-                </div>
-
-              </div>
-
-            )
-          })}
+          ))}
 
         </div>
 
       </section>
 
       {/* =====================================================
-          SCORING SYSTEM
+          MOMENT TYPES
       ====================================================== */}
 
       <section className="border-t border-white/[0.06] bg-[#0A0B0E]">
@@ -465,7 +356,7 @@ function Leaderboards() {
                 <span className="h-px w-7 bg-[#FF4655]" />
 
                 <span className="font-display text-[9px] font-bold uppercase tracking-[0.18em] text-[#FF4655]">
-                  Private scoring
+                  Clip categories
                 </span>
 
               </div>
@@ -474,101 +365,81 @@ function Leaderboards() {
 
                 Play.
                 <br />
-                Score.
+                Capture.
                 <br />
 
                 <span className="text-[#FF4655]">
-                  Celebrate.
+                  Remember.
                 </span>
 
               </h2>
 
               <p className="mt-4 text-xs leading-5 text-[#666970] sm:mt-5">
 
-                Every clip has a play type. Better moments
-                earn more points and increase the player's
-                private play score.
-
-              </p>
-
-              <p className="mt-3 text-[9px] leading-4 text-[#4E5157]">
-
-                This scoring system is a private community
-                feature and is not connected to official
-                VALORANT competitive ratings.
+                Clips can be categorized by the type of
+                gameplay moment they contain.
 
               </p>
 
             </div>
 
-            {/* POINTS */}
+            {/* CATEGORIES */}
 
             <div className="grid w-full max-w-[760px] grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2">
 
-              <ScoreItem
+              <MomentItem
                 icon={<Target size={14} />}
                 name="ACE"
-                points="+100"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Flame size={14} />}
                 name="1V5 CLUTCH"
-                points="+100"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Flame size={14} />}
                 name="1V4 CLUTCH"
-                points="+80"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Shield size={14} />}
                 name="1V3 CLUTCH"
-                points="+60"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Target size={14} />}
                 name="4K"
-                points="+50"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Shield size={14} />}
                 name="1V2 CLUTCH"
-                points="+40"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Target size={14} />}
                 name="3K"
-                points="+30"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Brain size={14} />}
                 name="BIG BRAIN"
-                points="+20"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Target size={14} />}
                 name="INSANE SHOT"
-                points="+20"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Target size={14} />}
                 name="2K"
-                points="+15"
               />
 
-              <ScoreItem
+              <MomentItem
                 icon={<Flame size={14} />}
                 name="HIGHLIGHT"
-                points="+10"
               />
 
             </div>
@@ -584,10 +455,13 @@ function Leaderboards() {
 }
 
 /* =========================================================
-   TOP PLAYER
+   FEATURED PLAYER CARD
 ========================================================= */
 
-function TopPlayer({ player, position }) {
+function PlayerCard({
+  player,
+  position,
+}) {
 
   const isFirst = position === 0
 
@@ -611,11 +485,9 @@ function TopPlayer({ player, position }) {
           className="h-full w-full object-cover object-center transition duration-500 group-hover:scale-105"
         />
 
-        {/* IMAGE GRADIENT */}
-
         <div className="absolute inset-0 bg-gradient-to-t from-[#0D0F12] via-black/10 to-transparent" />
 
-        {/* POSITION */}
+        {/* FEATURE MARKER */}
 
         <div
           className={`absolute left-5 top-5 flex h-11 w-11 items-center justify-center ${
@@ -674,45 +546,32 @@ function TopPlayer({ player, position }) {
 
           </div>
 
-          {/* RANK */}
-
           <span className="self-start border border-white/[0.07] bg-[#111317] px-2.5 py-1.5 font-display text-[7px] font-bold uppercase tracking-[0.08em] text-[#777A82] sm:px-3 sm:text-[8px]">
             {player.rank}
           </span>
 
         </div>
 
-        {/* DIVIDER */}
-
         <div className="my-4 h-px bg-white/[0.06] sm:my-5" />
 
-        {/* SCORE */}
+        {/* HIGHLIGHT STATS */}
 
-        <div className="flex items-end justify-between">
+        <div className="grid grid-cols-3 gap-2">
 
-          <div>
+          <Stat
+            value={player.totalHighlights}
+            label="MOMENTS"
+          />
 
-            <p className="font-display text-xl font-bold text-white sm:text-2xl">
-              {player.totalPlays}
-            </p>
+          <Stat
+            value={player.aces}
+            label="ACES"
+          />
 
-            <p className="mt-1 font-display text-[7px] font-bold uppercase tracking-[0.15em] text-[#555960]">
-              PLAYS
-            </p>
-
-          </div>
-
-          <div className="text-right">
-
-            <p className="font-display text-xl font-bold text-[#FF4655] sm:text-2xl">
-              {player.score}
-            </p>
-
-            <p className="mt-1 font-display text-[7px] font-bold uppercase tracking-[0.15em] text-[#555960]">
-              PLAY SCORE
-            </p>
-
-          </div>
+          <Stat
+            value={player.clutches}
+            label="CLUTCHES"
+          />
 
         </div>
 
@@ -723,33 +582,171 @@ function TopPlayer({ player, position }) {
 }
 
 /* =========================================================
-   SCORE ITEM
+   PLAYER ROW
 ========================================================= */
 
-function ScoreItem({ icon, name, points }) {
+function PlayerRow({
+  player,
+  position,
+}) {
 
   return (
 
-    <div className="flex items-center justify-between border border-white/[0.06] bg-[#0D0F12] px-3 py-3 sm:px-4">
+    <div className="group flex items-center gap-2.5 border-b border-white/[0.06] px-3 py-4 transition last:border-b-0 hover:bg-white/[0.025] sm:gap-4 sm:px-5 sm:py-5">
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      {/* POSITION */}
 
-        <div className="text-[#FF4655]">
-          {icon}
-        </div>
+      <div className="flex w-6 shrink-0 justify-center sm:w-8">
 
-        <span className="font-display text-[8px] font-bold uppercase tracking-[0.06em] text-[#777A82] sm:text-[9px] sm:tracking-[0.08em]">
-          {name}
+        <span className="font-display text-xs font-bold text-[#555960] sm:text-sm">
+          {String(position).padStart(2, "0")}
         </span>
 
       </div>
 
-      <span className="font-display text-[11px] font-bold text-white">
-        {points}
+      {/* PLAYER */}
+
+      <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-4">
+
+        <div className="h-10 w-10 shrink-0 overflow-hidden border border-white/[0.08] bg-[#111317] sm:h-12 sm:w-12">
+
+          <img
+            src={player.image}
+            alt={player.name}
+            className="h-full w-full object-cover"
+          />
+
+        </div>
+
+        <div className="min-w-0">
+
+          <p className="truncate font-display text-sm font-bold text-white">
+
+            {player.name}
+
+            <span className="ml-1 text-[#555960]">
+              #{player.tag}
+            </span>
+
+          </p>
+
+          <div className="mt-1 flex flex-wrap items-center gap-1.5 sm:mt-1.5 sm:gap-2">
+
+            <span className="font-display text-[8px] font-bold uppercase tracking-[0.12em] text-[#FF4655]">
+              {player.agent}
+            </span>
+
+            <span className="text-[#33363B]">
+              •
+            </span>
+
+            <span className="font-display text-[8px] font-bold uppercase tracking-[0.1em] text-[#666970]">
+              {player.rank}
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* STATS */}
+
+      <div className="hidden gap-6 sm:flex">
+
+        <SmallStat
+          value={player.totalHighlights}
+          label="MOMENTS"
+        />
+
+        <SmallStat
+          value={player.aces}
+          label="ACES"
+        />
+
+        <SmallStat
+          value={player.clutches}
+          label="CLUTCHES"
+        />
+
+      </div>
+
+    </div>
+  )
+}
+
+/* =========================================================
+   STAT
+========================================================= */
+
+function Stat({
+  value,
+  label,
+}) {
+
+  return (
+
+    <div className="text-center">
+
+      <p className="font-display text-xl font-bold text-white sm:text-2xl">
+        {value}
+      </p>
+
+      <p className="mt-1 font-display text-[7px] font-bold uppercase tracking-[0.12em] text-[#555960]">
+        {label}
+      </p>
+
+    </div>
+  )
+}
+
+/* =========================================================
+   SMALL STAT
+========================================================= */
+
+function SmallStat({
+  value,
+  label,
+}) {
+
+  return (
+
+    <div className="w-16">
+
+      <p className="font-display text-xs font-bold text-white sm:text-sm">
+        {value}
+      </p>
+
+      <p className="mt-1 font-display text-[7px] font-bold uppercase tracking-[0.12em] text-[#555960]">
+        {label}
+      </p>
+
+    </div>
+  )
+}
+
+/* =========================================================
+   MOMENT ITEM
+========================================================= */
+
+function MomentItem({
+  icon,
+  name,
+}) {
+
+  return (
+
+    <div className="flex items-center gap-2 border border-white/[0.06] bg-[#0D0F12] px-3 py-3 sm:gap-3 sm:px-4">
+
+      <div className="text-[#FF4655]">
+        {icon}
+      </div>
+
+      <span className="font-display text-[8px] font-bold uppercase tracking-[0.06em] text-[#777A82] sm:text-[9px] sm:tracking-[0.08em]">
+        {name}
       </span>
 
     </div>
-
   )
 }
 
