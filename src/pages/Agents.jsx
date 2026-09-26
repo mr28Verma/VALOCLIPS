@@ -1,563 +1,1414 @@
-import { useMemo, useState } from "react"
-import { Search, ChevronRight, Play } from "lucide-react"
+import { useState, useMemo, useEffect } from "react"
+import { Search, Play, Radio } from "lucide-react"
 
-const ROLES = ["ALL", "DUELIST", "INITIATOR", "CONTROLLER", "SENTINEL"]
+/* =========================================================
+   AGENT DATABASE
+   ========================================================= */
 
-const SLOT_ORDER = {
-  Ability1: "Q",
-  Ability2: "E",
-  Grenade: "C",
-  Ultimate: "X",
-}
+const AGENTS_DATA = [
+  {
+    id: "astra",
+    name: "ASTRA",
+    role: "CONTROLLER",
+    folder: "astra",
+    roleIcon: "/role/controller.png",
+    biography:
+      "Ghanaian Agent Astra harnesses the energies of the cosmos to reshape battlefields to her will.",
+    abilities: [
+      ["Q", "NOVA PULSE", "Set a Nova Pulse that briefly concusses players in its area."],
+      ["E", "NEBULA", "Place a smoke that blocks vision."],
+      ["C", "GRAVITY WELL", "Create a gravity well that pulls players toward its center."],
+      ["X", "ASTRAL FORM", "Enter Astral Form and control the battlefield through cosmic energy."],
+    ],
+  },
 
+  {
+    id: "breach",
+    name: "BREACH",
+    role: "INITIATOR",
+    folder: "breach",
+    roleIcon: "/role/initiator.png",
+    biography:
+      "Breach fires powerful kinetic blasts to aggressively clear paths through enemy territory.",
+    abilities: [
+      ["Q", "FLASHPOINT", "Fire a blinding charge through walls."],
+      ["E", "FAULT LINE", "Send a seismic blast that dazes players."],
+      ["C", "AFTERSHOCK", "Create a slow-acting burst through a wall."],
+      ["X", "ROLLING THUNDER", "Send a cascading seismic blast across the battlefield."],
+    ],
+  },
 
-const ROLE_ICONS = {
-  DUELIST: "/role/duelist.png",
-  INITIATOR: "/role/initiator.png",
-  CONTROLLER: "/role/controller.png",
-  SENTINEL: "/role/sentinel.png",
-}
+  {
+    id: "brimstone",
+    name: "BRIMSTONE",
+    role: "CONTROLLER",
+    folder: "brimstone",
+    roleIcon: "/role/controller.png",
+    biography:
+      "Brimstone's orbital arsenal gives his squad precise and reliable battlefield control.",
+    abilities: [
+      ["Q", "INCENDIARY", "Launch an incendiary grenade that creates a damaging fire zone."],
+      ["E", "SKY SMOKE", "Place long-lasting smoke clouds on selected locations."],
+      ["C", "STIM BEACON", "Deploy a beacon that grants combat bonuses."],
+      ["X", "ORBITAL STRIKE", "Launch an orbital strike that deals heavy damage over time."],
+    ],
+  },
 
-const ABILITY_DESCRIPTIONS = {
-  "Nova Pulse": "Concusses players in an area, making it difficult for them to shoot accurately.",
-  "Gravity Well": "Pulls players toward its center before trapping and damaging them.",
-  "Nebula": "Creates a smoke cloud that blocks vision.",
-  "Astral Form": "Allows Astra to enter Astral Form and place stars and use her cosmic abilities.",
-  "Flashpoint": "Creates a fast-acting flash that blinds players looking toward it.",
-  "Fault Line": "Sends a seismic blast that dazes players caught in its path.",
-  "Aftershock": "Fires a fusion charge that damages players caught in its area.",
-  "Rolling Thunder": "Sends a powerful seismic wave that knocks up and concusses players.",
-  "Incendiary": "Throws a grenade that creates a damaging fire zone.",
-  "Sky Smoke": "Deploys smoke clouds that block vision.",
-  "Stim Beacon": "Places a beacon that grants combat buffs to nearby players.",
-  "Orbital Strike": "Calls down a devastating orbital strike that damages players in its area.",
-  "Headhunter": "Equips a powerful heavy pistol.",
-  "Rendezvous": "Places teleport anchors that Chamber can teleport between.",
-  "Trademark": "Places a trap that slows and holds nearby enemies when triggered.",
-  "Tour De Force": "Summons a powerful custom sniper rifle.",
-  "Meddle": "Throws a projectile that creates a lingering decay effect.",
-  "Ruse": "Creates a smoke cloud that blocks vision.",
-  "Pick-Me-Up": "Damaging an enemy allows Clove to gain a temporary combat boost.",
-  "Not Dead Yet": "Allows Clove to temporarily revive after being eliminated.",
-  "Cyber Cage": "Deploys a cage that blocks vision and slows enemies.",
-  "Spycam": "Places a remote camera that can reveal enemies.",
-  "Trapwire": "Places a tripwire that restrains and reveals enemies.",
-  "Neural Theft": "Reveals the locations of living enemy players.",
-  "Sonic Sensor": "Detects significant sound and concusses players in its area.",
-  "GravNet": "Throws a grenade that forces affected players to crouch and move slowly.",
-  "Barrier Mesh": "Deploys a barrier that blocks movement.",
-  "Annihilation": "Captures the first enemy hit and cocoons them.",
-  "Seize": "Creates a zone that holds enemies in place and applies decay.",
-  "Haunt": "Reveals enemies caught in its area and creates a tracking trail.",
-  "Prowler": "Sends a creature that follows nearby enemies and nearsights them.",
-  "Nightfall": "Sends a wave of nightmare energy that deafens, decays, and marks enemies.",
-  "Wingman": "Sends Wingman to seek enemies or plant or defuse the Spike.",
-  "Dizzy": "Fires plasma at enemies and nearsights them.",
-  "Mosh Pit": "Throws a grenade that creates a damaging area.",
-  "Thrash": "Sends Thrash to capture and detain enemies.",
-  "Cove": "Creates a protective sphere that blocks bullets and vision.",
-  "High Tide": "Creates a moving wall of water that blocks vision and slows players.",
-  "Cascade": "Creates a moving wave that blocks vision and slows players.",
-  "Reckoning": "Summons a wave that concusses, knocks back, and reveals enemies.",
-  "Undercut": "Throws a molecular bolt that applies a weakened effect.",
-  "Double Tap": "Prepares a shielded state after securing a kill.",
-  "Contingency": "Creates a moving energy wall that blocks bullets.",
-  "Kill Contract": "Challenges an enemy to a one-on-one duel.",
-  "Updraft": "Propels Jett upward.",
-  "Tailwind": "Activates a burst of movement in Jett's current direction.",
-  "Cloudburst": "Throws a projectile that creates a brief smoke cloud.",
-  "Blade Storm": "Equips highly accurate throwing knives that recharge after kills.",
-  "FLASH/drive": "Throws a flash grenade that blinds players.",
-  "ZERO/point": "Throws a suppression blade that disables enemy abilities.",
-  "FRAG/ment": "Throws a fragment grenade that creates damaging explosions.",
-  "NULL/cmd": "Overloads KAY/O, suppressing enemies and allowing him to be stabilized when downed.",
-  "Alarmbot": "Deploys a bot that hunts enemies and applies a vulnerable effect.",
-  "Turret": "Deploys a turret that automatically fires at enemies.",
-  "Nanoswarm": "Throws a grenade that creates a damaging nanobot swarm.",
-  "Lockdown": "Deploys a device that detains enemies caught in its radius.",
-  "Relay Bolt": "Throws a bolt that creates a concussive blast.",
-  "High Gear": "Channels energy to increase movement speed and activate a slide.",
-  "Fast Lane": "Creates energy walls that block vision and damage enemies.",
-  "Overdrive": "Channels a powerful lightning beam with high mobility.",
-  "Paranoia": "Sends a projectile that nearsights and deafens enemies.",
-  "Dark Cover": "Creates a smoke sphere that blocks vision.",
-  "Shrouded Step": "Teleports Omen to a selected location.",
-  "From the Shadows": "Allows Omen to teleport to a selected location on the map.",
-  "Curveball": "Throws a flash orb that blinds players.",
-  "Hot Hands": "Throws a fireball that creates a damaging zone and heals Phoenix.",
-  "Blaze": "Creates a wall of fire that damages enemies and heals Phoenix.",
-  "Run It Back": "Marks Phoenix's location and returns him there when the effect ends or he dies.",
-  "Blast Pack": "Throws a satchel that can damage and propel players.",
-  "Paint Shells": "Throws a cluster grenade that creates multiple explosions.",
-  "Boom Bot": "Deploys a bot that chases detected enemies.",
-  "Showstopper": "Equips a rocket launcher that fires a devastating rocket.",
-  "Devour": "Consumes a Soul Orb to rapidly heal Reyna.",
-  "Dismiss": "Consumes a Soul Orb to become intangible.",
-  "Leer": "Throws an eye that nearsights enemies looking toward it.",
-  "Empress": "Enters a heightened combat state that can be extended with kills.",
-  "Slow Orb": "Throws an orb that creates a slowing field.",
-  "Healing Orb": "Heals an ally or Sage herself.",
-  "Barrier Orb": "Creates a solid wall that blocks movement.",
-  "Resurrection": "Revives a dead ally after a brief channel.",
-  "Trailblazer": "Sends a controllable creature that can concuss enemies.",
-  "Guiding Light": "Sends a hawk that can flash enemies.",
-  "Regrowth": "Heals nearby allies using Skye's healing resource.",
-  "Seekers": "Sends seekers that track nearby enemies.",
-  "Shock Bolt": "Fires an explosive arrow that damages players in its area.",
-  "Recon Bolt": "Fires a reconnaissance arrow that reveals enemies.",
-  "Owl Drone": "Deploys a controllable drone that can reveal enemies.",
-  "Hunter's Fury": "Fires energy blasts through walls that damage and reveal enemies.",
-  "Special Delivery": "Throws a sticky grenade that creates a concussive effect.",
-  "Guided Salvo": "Fires missiles that can target locations and enemy utility.",
-  "Stealth Drone": "Deploys a drone that reveals and suppresses enemies.",
-  "Armageddon": "Designates a path for a massive damaging strike.",
-  "Ability 1": "A unique agent ability.",
-  "Ability 2": "A unique agent ability.",
-  "Ability 3": "A unique agent ability.",
-  "Ultimate": "The agent's ultimate ability.",
-  "Evolution": "Veto's ultimate ability that activates his evolved combat state.",
-  "Poison Cloud": "Throws a gas emitter that creates a toxic cloud.",
-  "Toxic Screen": "Deploys a long line of toxic gas that blocks vision.",
-  "Snake Bite": "Throws a chemical canister that creates a damaging and vulnerable zone.",
-  "Viper's Pit": "Creates a large toxic cloud that reduces enemy vision and health.",
-  "Arc Rose": "Places a hidden device that can be activated to flash enemies.",
-  "Shear": "Places a trap that creates an impassable wall when triggered.",
-  "Razorvine": "Creates a damaging, slowing field of sharp metal.",
-  "Steel Garden": "Creates an area that disables enemy weapons temporarily.",
-  "Saturate": "Throws a sticky projectile that slows and damages enemies.",
-  "Light Speed": "Activates Waylay's speed boost and directional dash.",
-  "Refract": "Marks Waylay's location and allows her to return there.",
-  "Blindside": "Throws a dimensional fragment that flashes enemies.",
-  "Gatecrash": "Places a tether that allows Yoru to teleport.",
-  "Fakeout": "Creates a moving decoy that flashes enemies when destroyed.",
-  "Dimensional Drift": "Enters another dimension where Yoru cannot be affected normally."
-}
+  {
+    id: "chamber",
+    name: "CHAMBER",
+    role: "SENTINEL",
+    folder: "chamber",
+    roleIcon: "/role/sentinel.png",
+    biography:
+      "French weapons designer Chamber uses his custom arsenal to hold positions and punish enemies.",
+    abilities: [
+      ["Q", "HEADHUNTER", "Equip a powerful precision pistol."],
+      ["E", "RENDEZVOUS", "Teleport between placed anchors."],
+      ["C", "TRADEMARK", "Place a trap that slows enemies."],
+      ["X", "TOUR DE FORCE", "Equip a powerful custom sniper rifle."],
+    ],
+  },
 
-const AGENTS = [
-  { name: "Astra", role: "CONTROLLER", folder: "astra", abilities: [["Q", "Nova Pulse"], ["E", "Gravity Well"], ["C", "Nebula"], ["X", "Astral Form"]] },
-  { name: "Breach", role: "INITIATOR", folder: "breach", abilities: [["Q", "Flashpoint"], ["E", "Fault Line"], ["C", "Aftershock"], ["X", "Rolling Thunder"]] },
-  { name: "Brimstone", role: "CONTROLLER", folder: "brime", abilities: [["Q", "Incendiary"], ["E", "Sky Smoke"], ["C", "Stim Beacon"], ["X", "Orbital Strike"]] },
-  { name: "Chamber", role: "SENTINEL", folder: "chamber", abilities: [["Q", "Headhunter"], ["E", "Rendezvous"], ["C", "Trademark"], ["X", "Tour De Force"]] },
-  { name: "Clove", role: "CONTROLLER", folder: "clove", abilities: [["Q", "Meddle"], ["E", "Ruse"], ["C", "Pick-Me-Up"], ["X", "Not Dead Yet"]] },
-  { name: "Cypher", role: "SENTINEL", folder: "cypher", abilities: [["Q", "Cyber Cage"], ["E", "Spycam"], ["C", "Trapwire"], ["X", "Neural Theft"]] },
-  { name: "Deadlock", role: "SENTINEL", folder: "deadlock", abilities: [["Q", "Sonic Sensor"], ["E", "GravNet"], ["C", "Barrier Mesh"], ["X", "Annihilation"]] },
-  { name: "Fade", role: "INITIATOR", folder: "fade", abilities: [["Q", "Seize"], ["E", "Haunt"], ["C", "Prowler"], ["X", "Nightfall"]] },
-  { name: "Gekko", role: "INITIATOR", folder: "geko", abilities: [["Q", "Wingman"], ["E", "Dizzy"], ["C", "Mosh Pit"], ["X", "Thrash"]] },
-  { name: "Harbor", role: "CONTROLLER", folder: "harbor", abilities: [["Q", "Cove"], ["E", "High Tide"], ["C", "Cascade"], ["X", "Reckoning"]] },
-  { name: "Iso", role: "DUELIST", folder: "iso", abilities: [["Q", "Undercut"], ["E", "Double Tap"], ["C", "Contingency"], ["X", "Kill Contract"]] },
-  { name: "Jett", role: "DUELIST", folder: "jett", abilities: [["Q", "Updraft"], ["E", "Tailwind"], ["C", "Cloudburst"], ["X", "Blade Storm"]] },
-  { name: "KAY/O", role: "INITIATOR", folder: "kayo", abilities: [["Q", "FLASH/drive"], ["E", "ZERO/point"], ["C", "FRAG/ment"], ["X", "NULL/cmd"]] },
-  { name: "Killjoy", role: "SENTINEL", folder: "killjoy", abilities: [["Q", "Alarmbot"], ["E", "Turret"], ["C", "Nanoswarm"], ["X", "Lockdown"]] },
-  { name: "Miks", role: "CONTROLLER", folder: "miks", abilities: [["Q", "Ability 1"], ["E", "Ability 2"], ["C", "Ability 3"], ["X", "Ultimate"]] },
-  { name: "Neon", role: "DUELIST", folder: "neon", abilities: [["Q", "Relay Bolt"], ["E", "High Gear"], ["C", "Fast Lane"], ["X", "Overdrive"]] },
-  { name: "Omen", role: "CONTROLLER", folder: "omen", abilities: [["Q", "Paranoia"], ["E", "Dark Cover"], ["C", "Shrouded Step"], ["X", "From the Shadows"]] },
-  { name: "Phoenix", role: "DUELIST", folder: "phoenix", abilities: [["Q", "Curveball"], ["E", "Hot Hands"], ["C", "Blaze"], ["X", "Run It Back"]] },
-  { name: "Raze", role: "DUELIST", folder: "raze", abilities: [["Q", "Blast Pack"], ["E", "Paint Shells"], ["C", "Boom Bot"], ["X", "Showstopper"]] },
-  { name: "Reyna", role: "DUELIST", folder: "reyna", abilities: [["Q", "Devour"], ["E", "Dismiss"], ["C", "Leer"], ["X", "Empress"]] },
-  { name: "Sage", role: "SENTINEL", folder: "sage", abilities: [["Q", "Slow Orb"], ["E", "Healing Orb"], ["C", "Barrier Orb"], ["X", "Resurrection"]] },
-  { name: "Skye", role: "INITIATOR", folder: "skye", abilities: [["Q", "Trailblazer"], ["E", "Guiding Light"], ["C", "Regrowth"], ["X", "Seekers"]] },
-  { name: "Sova", role: "INITIATOR", folder: "sova", abilities: [["Q", "Shock Bolt"], ["E", "Recon Bolt"], ["C", "Owl Drone"], ["X", "Hunter's Fury"]] },
-  { name: "Tejo", role: "INITIATOR", folder: "tejo", abilities: [["Q", "Special Delivery"], ["E", "Guided Salvo"], ["C", "Stealth Drone"], ["X", "Armageddon"]] },
-  { name: "Veto", role: "SENTINEL", folder: "veto", abilities: [["Q", "Chokehold"], ["E", "Crosscut"], ["C", "Interceptor"], ["X", "Evolution"]] },
-  { name: "Viper", role: "CONTROLLER", folder: "viper", abilities: [["Q", "Poison Cloud"], ["E", "Toxic Screen"], ["C", "Snake Bite"], ["X", "Viper's Pit"]] },
-  { name: "Vyse", role: "SENTINEL", folder: "vyse", abilities: [["Q", "Arc Rose"], ["E", "Shear"], ["C", "Razorvine"], ["X", "Steel Garden"]] },
-  { name: "Waylay", role: "DUELIST", folder: "waylay", abilities: [["Q", "Saturate"], ["E", "Light Speed"], ["C", "Refract"], ["X", "Convergent Paths"]] },
-  { name: "Yoru", role: "DUELIST", folder: "yoru", abilities: [["Q", "Blindside"], ["E", "Gatecrash"], ["C", "Fakeout"], ["X", "Dimensional Drift"]] },
+  {
+    id: "clove",
+    name: "CLOVE",
+    role: "CONTROLLER",
+    folder: "clove",
+    roleIcon: "/role/controller.png",
+    biography:
+      "Clove uses immortal energy to influence the fight even after death.",
+    abilities: [
+      ["Q", "MEDDLE", "Throw immortal energy that applies Decay."],
+      ["E", "RUSE", "Place smoke clouds, even after death."],
+      ["C", "PICK-ME-UP", "Gain temporary health and speed after damaging enemies."],
+      ["X", "NOT DEAD YET", "Return to the fight after being eliminated."],
+    ],
+  },
+
+  {
+    id: "cypher",
+    name: "CYPHER",
+    role: "SENTINEL",
+    folder: "cypher",
+    roleIcon: "/role/sentinel.png",
+    biography:
+      "Cypher is a one-man surveillance network who keeps tabs on every enemy movement.",
+    abilities: [
+      ["Q", "CYBER CAGE", "Create a vision-blocking cage."],
+      ["E", "SPYCAM", "Install and control a surveillance camera."],
+      ["C", "TRAPWIRE", "Install a tripwire that reveals and dazes enemies."],
+      ["X", "NEURAL THEFT", "Reveal the locations of living enemies."],
+    ],
+  },
+
+  {
+    id: "deadlock",
+    name: "DEADLOCK",
+    role: "SENTINEL",
+    folder: "deadlock",
+    roleIcon: "/role/sentinel.png",
+    biography:
+      "Deadlock uses advanced nanowire technology to secure areas and stop enemy advances.",
+    abilities: [
+      ["Q", "SONIC SENSOR", "Detect significant sounds and concuss players."],
+      ["E", "GRAVNET", "Force affected enemies to crouch and move slowly."],
+      ["C", "BARRIER MESH", "Deploy a barrier that blocks movement."],
+      ["X", "ANNIHILATION", "Capture an enemy inside a nanowire cocoon."],
+    ],
+  },
+
+  {
+    id: "fade",
+    name: "FADE",
+    role: "INITIATOR",
+    folder: "fade",
+    roleIcon: "/role/initiator.png",
+    biography:
+      "Fade uses nightmares to reveal enemy secrets and hunt targets through darkness.",
+    abilities: [
+      ["Q", "SEIZE", "Hold enemies in place with nightmare energy."],
+      ["E", "HAUNT", "Reveal enemies and track their movement."],
+      ["C", "PROWLER", "Send a creature that tracks and nearsights enemies."],
+      ["X", "NIGHTFALL", "Deafen, decay and mark enemies with nightmare energy."],
+    ],
+  },
+
+  {
+    id: "gekko",
+    name: "GEKKO",
+    role: "INITIATOR",
+    folder: "geko",
+    roleIcon: "/role/initiator.png",
+    biography:
+      "Gekko leads a crew of creatures that can be recovered and reused throughout the round.",
+    abilities: [
+      ["Q", "WINGMAN", "Send Wingman forward to concuss enemies or interact with the Spike."],
+      ["E", "DIZZY", "Launch Dizzy to impair enemy vision."],
+      ["C", "MOSH PIT", "Create a damaging area after throwing Mosh."],
+      ["X", "THRASH", "Control Thrash to restrain enemies."],
+    ],
+  },
+
+  {
+    id: "harbor",
+    name: "HARBOR",
+    role: "CONTROLLER",
+    folder: "harbor",
+    roleIcon: "/role/controller.png",
+    biography:
+      "Harbor bends water to protect his team and reshape the battlefield.",
+    abilities: [
+      ["Q", "COVE", "Create a protective water sphere."],
+      ["E", "HIGH TIDE", "Create a controllable wall of water."],
+      ["C", "CASCADE", "Send a wave of water forward."],
+      ["X", "RECKONING", "Summon geyser energy that targets enemies."],
+    ],
+  },
+
+  {
+    id: "iso",
+    name: "ISO",
+    role: "DUELIST",
+    folder: "iso",
+    roleIcon: "/role/duelist.png",
+    biography:
+      "Iso enters focused combat states and turns the battlefield into isolated duels.",
+    abilities: [
+      ["Q", "UNDERCUT", "Apply Vulnerable to enemies with a molecular bolt."],
+      ["E", "DOUBLE TAP", "Enter a concentration state and gain a shield."],
+      ["C", "CONTINGENCY", "Deploy a moving energy wall."],
+      ["X", "KILL CONTRACT", "Pull an enemy into a one-on-one dimensional duel."],
+    ],
+  },
+
+  {
+    id: "jett",
+    name: "JETT",
+    role: "DUELIST",
+    folder: "jett",
+    roleIcon: "/role/duelist.png",
+    biography:
+      "Jett's agile and evasive fighting style lets her take risks that few others can.",
+    abilities: [
+      ["Q", "UPDRAFT", "Propel Jett high into the air."],
+      ["E", "TAILWIND", "Dash in the direction Jett is moving."],
+      ["C", "CLOUDBURST", "Create a short-lived vision-blocking cloud."],
+      ["X", "BLADE STORM", "Equip highly accurate throwing knives."],
+    ],
+  },
+
+  {
+    id: "kayo",
+    name: "KAY/O",
+    role: "INITIATOR",
+    folder: "kayo",
+    roleIcon: "/role/initiator.png",
+    biography:
+      "KAY/O is a machine built to neutralize enemy abilities and suppress opposing forces.",
+    abilities: [
+      ["Q", "FLASH/DRIVE", "Throw a flash grenade."],
+      ["E", "ZERO/POINT", "Suppress enemies caught by the suppression blade."],
+      ["C", "FRAG/MENT", "Create damaging explosive zones."],
+      ["X", "NULL/CMD", "Suppress enemies and continue fighting after being downed."],
+    ],
+  },
+
+  {
+    id: "killjoy",
+    name: "KILLJOY",
+    role: "SENTINEL",
+    folder: "killjoy",
+    roleIcon: "/role/sentinel.png",
+    biography:
+      "Killjoy secures the battlefield with an arsenal of intelligent inventions.",
+    abilities: [
+      ["Q", "ALARMBOT", "Deploy a bot that hunts nearby enemies."],
+      ["E", "TURRET", "Deploy a turret that fires at enemies."],
+      ["C", "NANOSWARM", "Deploy a damaging swarm of nanobots."],
+      ["X", "LOCKDOWN", "Detain enemies caught inside the device's radius."],
+    ],
+  },
+
+  {
+    id: "miks",
+    name: "MIKS",
+    role: "CONTROLLER",
+    folder: "miks",
+    roleIcon: "/role/controller.png",
+    biography:
+      "Miks uses sonic energy to coordinate his team and control the rhythm of the battlefield.",
+    abilities: [
+      ["Q", "HARMONIZE", "Empower an ally through sonic energy."],
+      ["E", "RESONANCE", "Deploy sonic energy with multiple battlefield effects."],
+      ["C", "DISSONANT PULSE", "Launch a sonic device with combat effects."],
+      ["X", "SONIC SHOWSTOPPER", "Unleash a powerful sonic ultimate."],
+    ],
+  },
+
+  {
+    id: "neon",
+    name: "NEON",
+    role: "DUELIST",
+    folder: "neon",
+    roleIcon: "/role/duelist.png",
+    biography:
+      "Neon surges across the battlefield with extreme speed and bioelectric power.",
+    abilities: [
+      ["Q", "RELAY BOLT", "Throw a bolt that concusses players."],
+      ["E", "HIGH GEAR", "Gain increased movement speed and prepare a slide."],
+      ["C", "FAST LANE", "Create parallel electric walls."],
+      ["X", "OVERDRIVE", "Fire a powerful electric beam while moving."],
+    ],
+  },
+
+  {
+    id: "omen",
+    name: "OMEN",
+    role: "CONTROLLER",
+    folder: "omen",
+    roleIcon: "/role/controller.png",
+    biography:
+      "Omen hunts from the shadows, using blindness, teleportation and paranoia.",
+    abilities: [
+      ["Q", "PARANOIA", "Fire a shadow projectile through walls."],
+      ["E", "DARK COVER", "Create a long-lasting smoke sphere."],
+      ["C", "SHROUDED STEP", "Teleport to a selected location."],
+      ["X", "FROM THE SHADOWS", "Teleport across the map through the shadows."],
+    ],
+  },
+
+  {
+    id: "phoenix",
+    name: "PHOENIX",
+    role: "DUELIST",
+    folder: "phoenix",
+    roleIcon: "/role/duelist.png",
+    biography:
+      "Phoenix fights with fire and flare, using his abilities to create aggressive openings.",
+    abilities: [
+      ["Q", "CURVEBALL", "Throw a flash around corners."],
+      ["E", "HOT HANDS", "Create a damaging fire zone that heals Phoenix."],
+      ["C", "BLAZE", "Create a wall of fire."],
+      ["X", "RUN IT BACK", "Fight freely and return to the starting location."],
+    ],
+  },
+
+  {
+    id: "raze",
+    name: "RAZE",
+    role: "DUELIST",
+    folder: "raze",
+    roleIcon: "/role/duelist.png",
+    biography:
+      "Raze specializes in explosive force and clearing enemies from tight spaces.",
+    abilities: [
+      ["Q", "BLAST PACK", "Throw an explosive pack that can propel players."],
+      ["E", "PAINT SHELLS", "Throw a cluster grenade."],
+      ["C", "BOOM BOT", "Deploy a bot that hunts enemies."],
+      ["X", "SHOWSTOPPER", "Fire a devastating rocket."],
+    ],
+  },
+
+  {
+    id: "reyna",
+    name: "REYNA",
+    role: "DUELIST",
+    folder: "reyna",
+    roleIcon: "/role/duelist.png",
+    biography:
+      "Reyna dominates individual combat and becomes stronger through enemy eliminations.",
+    abilities: [
+      ["Q", "DEVOUR", "Consume a Soul Orb to heal."],
+      ["E", "DISMISS", "Become intangible after consuming a Soul Orb."],
+      ["C", "LEER", "Create a destructible eye that nearsights enemies."],
+      ["X", "EMPRESS", "Enter a combat frenzy and reset its duration with kills."],
+    ],
+  },
+
+  {
+    id: "sage",
+    name: "SAGE",
+    role: "SENTINEL",
+    folder: "sage",
+    roleIcon: "/role/sentinel.png",
+    biography:
+      "Sage creates safety for her team through healing, barriers and resurrection.",
+    abilities: [
+      ["Q", "SLOW ORB", "Create an area that slows players."],
+      ["E", "HEALING ORB", "Heal an ally or herself."],
+      ["C", "BARRIER ORB", "Create a solid wall."],
+      ["X", "RESURRECTION", "Bring a dead ally back to life."],
+    ],
+  },
+
+  {
+    id: "skye",
+    name: "SKYE",
+    role: "INITIATOR",
+    folder: "skye",
+    roleIcon: "/role/initiator.png",
+    biography:
+      "Skye uses her animal companions to guide, reveal and support her team.",
+    abilities: [
+      ["Q", "TRAILBLAZER", "Control a creature that can concuss enemies."],
+      ["E", "GUIDING LIGHT", "Send a controllable hawk that can flash enemies."],
+      ["C", "REGROWTH", "Heal nearby allies."],
+      ["X", "SEEKERS", "Send seekers toward nearby enemies."],
+    ],
+  },
+
+  {
+    id: "sova",
+    name: "SOVA",
+    role: "INITIATOR",
+    folder: "sova",
+    roleIcon: "/role/initiator.png",
+    biography:
+      "Sova tracks, finds and eliminates enemies with precision and advanced scouting abilities.",
+    abilities: [
+      ["Q", "SHOCK BOLT", "Fire an explosive shock bolt."],
+      ["E", "RECON BOLT", "Reveal enemies in the bolt's scanning area."],
+      ["C", "OWL DRONE", "Control a drone and reveal enemies with a dart."],
+      ["X", "HUNTER'S FURY", "Fire wall-piercing energy blasts."],
+    ],
+  },
+
+  {
+    id: "tejo",
+    name: "TEJO",
+    role: "INITIATOR",
+    folder: "tejo",
+    roleIcon: "/role/initiator.png",
+    biography:
+      "Tejo uses ballistic guidance technology to deliver explosives and clear entrenched enemies.",
+    abilities: [
+      ["Q", "STICKY GRENADE", "Launch an explosive grenade."],
+      ["E", "SPECIAL DELIVERY", "Launch a grenade that can concuss enemies."],
+      ["C", "STEALTH DRONE", "Deploy a drone that reveals enemies."],
+      ["X", "ARMAGEDDON", "Direct a devastating strike along a selected path."],
+    ],
+  },
+
+  {
+    id: "veto",
+    name: "VETO",
+    role: "SENTINEL",
+    folder: "veto",
+    roleIcon: "/role/sentinel.png",
+    biography:
+      "Veto uses his mutation to nullify enemy powers and technology.",
+    abilities: [
+      ["Q", "CHOKEHOLD", "Trap enemies and apply disabling effects."],
+      ["E", "CROSSCUT", "Create a location that Veto can return to."],
+      ["C", "INTERCEPTOR", "Destroy certain enemy utility."],
+      ["X", "EVOLUTION", "Activate Veto's enhanced combat state."],
+    ],
+  },
+
+  {
+    id: "viper",
+    name: "VIPER",
+    role: "CONTROLLER",
+    folder: "viper",
+    roleIcon: "/role/controller.png",
+    biography:
+      "Viper controls the battlefield with poisonous chemical devices and vision denial.",
+    abilities: [
+      ["Q", "POISON CLOUD", "Create a toxic gas cloud."],
+      ["E", "TOXIC SCREEN", "Create a long wall of toxic gas."],
+      ["C", "SNAKE BITE", "Create a damaging and vulnerable chemical zone."],
+      ["X", "VIPER'S PIT", "Create a large toxic cloud that reduces visibility."],
+    ],
+  },
+
+  {
+    id: "vyse",
+    name: "VYSE",
+    role: "SENTINEL",
+    folder: "vyse",
+    roleIcon: "/role/sentinel.png",
+    biography:
+      "Vyse uses liquid metal technology to isolate, trap and disarm enemies.",
+    abilities: [
+      ["Q", "ARC ROSE", "Place a device that can flash enemies."],
+      ["E", "SHEAR", "Create a wall when an enemy triggers the trap."],
+      ["C", "RAZORVINE", "Create damaging and slowing metal vines."],
+      ["X", "STEEL GARDEN", "Jam the primary weapons of enemies in the area."],
+    ],
+  },
+
+  {
+    id: "waylay",
+    name: "WAYLAY",
+    role: "DUELIST",
+    folder: "waylay",
+    roleIcon: "/role/duelist.png",
+    biography:
+      "Waylay uses radiant light to accelerate across the battlefield and disrupt enemy movement.",
+    abilities: [
+      ["Q", "SATURATION", "Create an area that disrupts enemy movement."],
+      ["E", "LIGHTSPEED", "Dash forward with radiant speed."],
+      ["C", "REFRACT", "Create a return point."],
+      ["X", "CONVERGENT PATHS", "Launch a powerful radiant pulse."],
+    ],
+  },
+
+  {
+    id: "yoru",
+    name: "YORU",
+    role: "DUELIST",
+    folder: "yoru",
+    roleIcon: "/role/duelist.png",
+    biography:
+      "Yoru tears holes through reality to infiltrate enemy lines unseen.",
+    abilities: [
+      ["Q", "BLINDSIDE", "Throw a dimensional fragment that flashes enemies."],
+      ["E", "GATECRASH", "Teleport using a dimensional tether."],
+      ["C", "FAKEOUT", "Create a decoy that can flash enemies."],
+      ["X", "DIMENSIONAL DRIFT", "Enter a dimension where Yoru cannot normally be affected."],
+    ],
+  },
 ]
 
-function Agents() {
-  const [selectedAgent, setSelectedAgent] = useState(
-    AGENTS.find((agent) => agent.name === "Sova") || AGENTS[0]
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+const getClipId = (clip) =>
+  clip?.id || clip?._id
+
+const getVideoUrl = (clip) =>
+  clip?.videoUrl ||
+  clip?.video ||
+  clip?.url ||
+  ""
+
+const getThumbnail = (clip, agent) =>
+  clip?.thumbnailUrl ||
+  clip?.thumbnail ||
+  clip?.image ||
+  `/agent/background/${agent.folder}.png`
+
+/* =========================================================
+   ALL AGENTS CARD
+   ========================================================= */
+
+function AllAgentsCard({ active, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative h-52 overflow-hidden border text-left transition duration-300 sm:h-60 ${
+        active
+          ? "border-[#FF4655] bg-[#14171E]"
+          : "border-white/[0.08] bg-[#0C0E12] hover:border-white/[0.25]"
+      }`}
+    >
+      {/* BACKGROUND */}
+
+      <div className="absolute inset-0 bg-[#101318]" />
+
+      <div
+        className="absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)",
+          backgroundSize: "16px 16px",
+        }}
+      />
+
+      {/* LARGE MARK */}
+
+      <div className="absolute inset-0 flex items-center justify-center">
+
+        <div
+          className={`relative flex h-24 w-24 items-center justify-center border transition duration-300 ${
+            active
+              ? "border-[#FF4655]/50 bg-[#FF4655]/10"
+              : "border-white/[0.1] bg-white/[0.02] group-hover:border-white/[0.2]"
+          }`}
+        >
+
+          <div className="absolute -left-1 -top-1 h-2 w-2 bg-[#FF4655]" />
+
+          <div className="absolute -bottom-1 -right-1 h-2 w-2 bg-white/20" />
+
+          <span
+            className={`font-display text-2xl font-black tracking-widest ${
+              active
+                ? "text-[#FF4655]"
+                : "text-white/80"
+            }`}
+          >
+            ALL
+          </span>
+
+        </div>
+
+      </div>
+
+      {/* TOP LABEL */}
+
+      <div className="absolute left-3 top-3">
+
+        <p className="font-mono text-[8px] font-bold uppercase tracking-[0.22em] text-[#FF4655]">
+          COMMUNITY
+        </p>
+
+      </div>
+
+      {/* BOTTOM GRADIENT */}
+
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#07080A] to-transparent" />
+
+      {/* BOTTOM CONTENT */}
+
+      <div className="absolute bottom-0 left-0 right-0 p-3">
+
+        <h3 className="font-display text-base font-black uppercase tracking-wider text-white">
+          ALL AGENTS
+        </h3>
+
+        <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.15em] text-gray-500">
+          VIEW ALL COMMUNITY CLIPS
+        </p>
+
+      </div>
+
+      {/* ACTIVE LINE */}
+
+      {active && (
+        <div className="absolute left-0 right-0 top-0 h-1 bg-[#FF4655]" />
+      )}
+
+      <span
+        className={`absolute bottom-0 right-0 h-2 w-2 ${
+          active
+            ? "bg-[#FF4655]"
+            : "bg-white/10"
+        }`}
+      />
+
+    </button>
   )
-  const [activeRole, setActiveRole] = useState("ALL")
-  const [search, setSearch] = useState("")
-  const [failedClips, setFailedClips] = useState({})
+}
+
+/* =========================================================
+   AGENT CARD
+   ========================================================= */
+
+function AgentCard({ agent, active, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group relative h-52 overflow-hidden border text-left transition duration-300 sm:h-60 ${
+        active
+          ? "border-[#FF4655] bg-[#14171E]"
+          : "border-white/[0.08] bg-[#0C0E12] hover:border-white/[0.25]"
+      }`}
+    >
+      {/* BACKGROUND */}
+
+      <img
+        src={`/agent/background/${agent.folder}.png`}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover opacity-25 transition duration-500 group-hover:scale-110"
+      />
+
+      {/* AGENT */}
+
+      <img
+        src={`/agent/picture/${agent.folder}.png`}
+        alt={agent.name}
+        className={`absolute inset-0 h-full w-full object-cover object-top transition duration-500 ${
+          active
+            ? "scale-105 brightness-110"
+            : "opacity-80 group-hover:scale-105 group-hover:opacity-100"
+        }`}
+      />
+
+      {/* OVERLAY */}
+
+      <div className="absolute inset-0 bg-gradient-to-t from-[#07080A] via-[#07080A]/30 to-transparent" />
+
+      {/* ACTIVE LINE */}
+
+      {active && (
+        <div className="absolute left-0 right-0 top-0 h-1 bg-[#FF4655]" />
+      )}
+
+      {/* ROLE */}
+
+      <div className="absolute right-2 top-2 border border-white/[0.08] bg-[#07080A]/80 p-1.5 backdrop-blur-md">
+
+        <img
+          src={agent.roleIcon}
+          alt=""
+          className="h-3.5 w-3.5 object-contain opacity-80"
+        />
+
+      </div>
+
+      {/* CONTENT */}
+
+      <div className="absolute bottom-0 left-0 right-0 p-3">
+
+        <div className="mb-1 font-mono text-[8px] font-bold uppercase tracking-[0.2em] text-[#FF4655]">
+          {agent.role}
+        </div>
+
+        <h3 className="font-display text-base font-black uppercase tracking-wider text-white">
+          {agent.name}
+        </h3>
+
+      </div>
+
+      {/* CORNER */}
+
+      <span
+        className={`absolute bottom-0 right-0 h-2 w-2 ${
+          active
+            ? "bg-[#FF4655]"
+            : "bg-white/10"
+        }`}
+      />
+
+    </button>
+  )
+}
+
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
+
+export default function Agents() {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedAgentId, setSelectedAgentId] =
+    useState("all")
+
+  const [activeAbilityIndex, setActiveAbilityIndex] =
+    useState(0)
+
+  const [clips, setClips] = useState([])
+  const [loadingClips, setLoadingClips] =
+    useState(false)
+
+  const [activeClipVideo, setActiveClipVideo] =
+    useState(null)
+
+  /* =======================================================
+     SEARCH
+     ======================================================= */
 
   const filteredAgents = useMemo(() => {
-    return AGENTS.filter((agent) => {
-      const matchesRole =
-        activeRole === "ALL" || agent.role === activeRole
+    const query =
+      searchQuery.trim().toLowerCase()
 
-      const matchesSearch = agent.name
-        .toLowerCase()
-        .includes(search.toLowerCase())
+    if (!query) {
+      return AGENTS_DATA
+    }
 
-      return matchesRole && matchesSearch
+    return AGENTS_DATA.filter((agent) => {
+      return (
+        agent.name
+          .toLowerCase()
+          .includes(query) ||
+        agent.role
+          .toLowerCase()
+          .includes(query)
+      )
     })
-  }, [activeRole, search])
+  }, [searchQuery])
 
-  const handleImageError = (clip) => {
-    setFailedClips((prev) => ({ ...prev, [clip]: true }))
+  /* =======================================================
+     SELECTED AGENT
+     ======================================================= */
+
+  const selectedAgent =
+    AGENTS_DATA.find(
+      (agent) =>
+        agent.id === selectedAgentId
+    ) || AGENTS_DATA[0]
+
+  const isAllAgents =
+    selectedAgentId === "all"
+
+  const selectedAbility =
+    selectedAgent.abilities[
+      activeAbilityIndex
+    ]
+
+  /* =======================================================
+     RESET WHEN AGENT CHANGES
+     ======================================================= */
+
+  useEffect(() => {
+    setActiveAbilityIndex(0)
+    setActiveClipVideo(null)
+  }, [selectedAgentId])
+
+  /* =======================================================
+     FETCH CLIPS
+     ======================================================= */
+
+  useEffect(() => {
+    let mounted = true
+
+    const controller =
+      new AbortController()
+
+    setLoadingClips(true)
+    setClips([])
+    setActiveClipVideo(null)
+
+    const clipsUrl = isAllAgents
+      ? "/api/clips"
+      : `/api/clips?agent=${encodeURIComponent(
+          selectedAgent.id
+        )}`
+
+    fetch(clipsUrl, {
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(
+            "Failed to fetch clips"
+          )
+        }
+
+        return response.json()
+      })
+      .then((data) => {
+        if (!mounted) return
+
+        const result =
+          Array.isArray(data)
+            ? data
+            : Array.isArray(data?.clips)
+              ? data.clips
+              : []
+
+        setClips(result)
+      })
+      .catch((error) => {
+        if (
+          error.name !== "AbortError" &&
+          mounted
+        ) {
+          setClips([])
+        }
+      })
+      .finally(() => {
+        if (mounted) {
+          setLoadingClips(false)
+        }
+      })
+
+    return () => {
+      mounted = false
+      controller.abort()
+    }
+  }, [selectedAgentId, isAllAgents, selectedAgent.id])
+
+  /* =======================================================
+     SELECT AGENT
+     ======================================================= */
+
+  const handleAgentSelect = (agentId) => {
+    setSelectedAgentId(agentId)
+    setActiveClipVideo(null)
+    setActiveAbilityIndex(0)
   }
 
+  /* =======================================================
+     PLAY CLIP
+     ======================================================= */
+
+  const handlePlayClip = (clip) => {
+    const videoUrl = getVideoUrl(clip)
+
+    if (!videoUrl) return
+
+    setActiveClipVideo(
+      getClipId(clip)
+    )
+  }
+
+  /* =======================================================
+     PAGE
+     ======================================================= */
+
   return (
-    <main className="min-h-screen bg-[#08090B] text-white">
-      {/* HEADER */}
-      <section className="border-b border-white/[0.06]">
-        <div className="mx-auto max-w-[1400px] px-4 pb-8 pt-10 sm:px-6 sm:pb-10 sm:pt-14 lg:px-10">
-          <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
-            <div>
-              <div className="flex items-center gap-2.5 sm:gap-3">
-                <span className="h-[1px] w-8 bg-[#FF4655]" />
-                <span className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-[#FF4655]">
-                  Valorant Agents
-                </span>
-              </div>
+    <div className="min-h-screen bg-[#07080A] text-white antialiased">
 
-              <h1 className="mt-4 font-display text-4xl font-bold uppercase leading-[0.92] tracking-[-0.04em] text-white sm:text-6xl">
-                Choose your
-                <br />
-                <span className="text-[#FF4655]">agent.</span>
-              </h1>
+      {/* BACKGROUND */}
 
-              <p className="mt-4 max-w-xl text-[13px] leading-6 text-[#70737B] sm:mt-5 sm:text-sm">
-                Explore every agent, their abilities, and the clips created
-                around them.
-              </p>
-            </div>
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, #ffffff 1px, transparent 0)",
+          backgroundSize: "24px 24px",
+        }}
+      />
 
-            {/* SEARCH */}
-            <div className="relative w-full lg:w-[300px]">
-              <Search
-                size={15}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-[#555960]"
-              />
+      <main className="relative z-10 mx-auto max-w-[1536px] px-4 py-8 sm:px-8 lg:px-12">
 
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="SEARCH AGENTS"
-                className="h-11 w-full border border-white/[0.08] bg-[#0D0F12] pl-11 pr-4 font-display text-[10px] font-semibold tracking-[0.12em] text-white outline-none transition focus:border-[#FF4655]/50 placeholder:text-[#50535A]"
-              />
-            </div>
-          </div>
+        {/* =================================================
+            HEADER
+            ================================================= */}
 
-          {/* ROLE FILTERS WITH ICONS */}
-          <div className="mt-7 flex gap-2 overflow-x-auto pb-1 sm:mt-10 sm:flex-wrap sm:overflow-visible sm:pb-0">
-            {ROLES.map((role) => {
-              const active = activeRole === role
-              const iconSrc = ROLE_ICONS[role]
+        <header className="mb-8 flex flex-col gap-6 border-b border-white/[0.08] pb-8 lg:flex-row lg:items-end lg:justify-between">
 
-              return (
-                <button
-                  key={role}
-                  onClick={() => setActiveRole(role)}
-                  className={`group relative flex shrink-0 items-center gap-2 px-4 py-2.5 font-display text-[9px] font-bold tracking-[0.1em] transition sm:gap-2.5 sm:px-5 sm:text-[10px] sm:tracking-[0.12em] ${active
-                      ? "bg-[#FF4655] text-white"
-                      : "border border-white/[0.07] bg-[#0C0E11] text-[#686B73] hover:border-white/[0.14] hover:text-white"
-                    }`}
-                >
-                  {iconSrc && (
-                    <img
-                      src={iconSrc}
-                      alt=""
-                      className={`h-4 w-4 transition ${active
-                          ? "brightness-0 invert"
-                          : "opacity-60 invert group-hover:opacity-100"
-                        }`}
-                    />
-                  )}
-                  <span>{role}</span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* AGENT SELECTION */}
-      <section className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6 sm:py-12 lg:px-10">
-        <div className="mb-5 flex items-end justify-between sm:mb-6">
           <div>
-            <p className="font-display text-[10px] font-bold tracking-[0.18em] text-[#555960]">
-              AGENT SELECT
+
+            <div className="mb-2 flex items-center gap-2 font-mono text-[11px] font-extrabold uppercase tracking-[0.3em] text-[#FF4655]">
+
+              <span className="h-1.5 w-1.5 bg-[#FF4655]" />
+
+              01 // AGENT DATABASE
+
+            </div>
+
+            <h1 className="font-display text-4xl font-black uppercase tracking-tight sm:text-5xl lg:text-6xl">
+
+              AGENTS{" "}
+
+              <span className="text-[#FF4655]">
+                //
+              </span>{" "}
+
+              DIRECTORY
+
+            </h1>
+
+            <p className="mt-2 max-w-xl text-xs text-gray-400 sm:text-sm">
+              Browse the complete agent roster and
+              inspect tactical abilities and community
+              clips.
             </p>
 
-            <h2 className="mt-2 font-display text-xl font-bold uppercase tracking-[-0.02em]">
-              All agents
-            </h2>
           </div>
 
-          <span className="font-display text-[9px] font-semibold tracking-[0.14em] text-[#555960]">
-            {filteredAgents.length} AGENTS
-          </span>
-        </div>
+          {/* SEARCH */}
 
-        {/* AGENT GRID */}
-        <div className="grid grid-cols-2 gap-2 min-[380px]:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8">
-          {filteredAgents.map((agent) => {
-            const selected = selectedAgent?.name === agent.name
+          <div className="relative w-full lg:w-80">
 
-            return (
-              <button
-                key={agent.name}
-                onClick={() => setSelectedAgent(agent)}
-                className={`group relative aspect-[0.78] min-h-0 overflow-hidden border text-left transition-all duration-300 ${selected
-                    ? "border-[#FF4655] bg-[#151014]"
-                    : "border-white/[0.06] bg-[#0D0F12] hover:border-[#FF4655]/60"
-                  }`}
-              >
-                {/* BACKGROUND ART */}
-                <img
-                  src={`/agent/background/${agent.folder}.png`}
-                  alt=""
-                  className={`absolute inset-0 h-full w-full object-cover transition duration-500 ${selected
-                      ? "scale-105 opacity-35"
-                      : "scale-100 opacity-20 group-hover:scale-105 group-hover:opacity-30"
-                    }`}
-                />
+            <Search
+              size={16}
+              className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"
+            />
 
-                {/* PORTRAIT */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <img
-                    src={`/agent/picture/${agent.folder}.png`}
-                    alt={agent.name}
-                    className={`h-full w-full object-contain object-bottom transition duration-300 ${selected
-                        ? "scale-[1.04] opacity-100"
-                        : "opacity-80 group-hover:scale-[1.03] group-hover:opacity-100"
-                      }`}
-                  />
-                </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(event) =>
+                setSearchQuery(
+                  event.target.value
+                )
+              }
+              placeholder="SEARCH AGENTS..."
+              className="w-full border border-white/[0.1] bg-[#0F1115] py-3 pl-10 pr-4 font-mono text-xs uppercase tracking-widest text-white placeholder-gray-500 outline-none transition focus:border-[#FF4655]"
+            />
 
-                {/* GRADIENT */}
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#08090B] via-[#08090B]/70 to-transparent" />
+            <span className="absolute bottom-0 right-0 top-0 w-1 bg-[#FF4655]/50" />
 
-                {/* ROLE */}
-                <div className="absolute left-2.5 top-2.5 sm:left-3 sm:top-3">
-                  {ROLE_ICONS[agent.role] && (
-                    <img
-                      src={ROLE_ICONS[agent.role]}
-                      alt=""
-                      className="h-4 w-4 object-contain opacity-70"
-                    />
-                  )}
-                </div>
+          </div>
 
-                {/* SELECTED MARK */}
-                {selected && (
-                  <div className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center bg-[#FF4655]">
-                    <span className="text-[9px] font-bold">✓</span>
-                  </div>
-                )}
+        </header>
 
-                {/* NAME */}
-                <div className="absolute inset-x-2.5 bottom-2.5 sm:inset-x-3 sm:bottom-3">
-                  <p
-                    className={`font-display text-[10px] font-bold uppercase tracking-[0.02em] min-[380px]:text-[11px] sm:text-[12px] ${selected ? "text-white" : "text-gray-300"
-                      }`}
-                  >
-                    {agent.name}
-                  </p>
+        {/* =================================================
+            AGENT ROSTER
+            ================================================= */}
 
-                  <p className="mt-0.5 font-display text-[6px] font-semibold uppercase tracking-[0.1em] text-[#686B73] sm:mt-1 sm:text-[7px] sm:tracking-[0.14em]">
-                    {agent.role}
-                  </p>
-                </div>
+        <section className="mb-12">
 
-                {/* HOVER LINE */}
-                <div
-                  className={`absolute bottom-0 left-0 h-[2px] bg-[#FF4655] transition-all ${selected
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                    }`}
-                />
-              </button>
-            )
-          })}
-        </div>
-      </section>
+          <div className="mb-5 flex items-center justify-between">
 
-      {/* SELECTED AGENT */}
-      {selectedAgent && (
-        <section className="border-y border-white/[0.06] bg-[#0A0B0E]">
-          <div className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-14 lg:px-10">
-            <div className="grid gap-8 sm:gap-12 lg:grid-cols-[0.9fr_1.1fr]">
-              {/* AGENT INFO */}
-              <div className="relative min-h-[360px] overflow-hidden border border-white/[0.06] bg-[#0D0F12] sm:min-h-[420px]">
-                {/* AGENT BACKGROUND */}
+            <div className="flex items-center gap-3">
+
+              <span className="h-1.5 w-1.5 bg-[#FF4655]" />
+
+              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.25em] text-gray-500">
+                AGENT ROSTER
+              </span>
+
+            </div>
+
+            <span className="font-mono text-[10px] uppercase tracking-widest text-gray-600">
+              {filteredAgents.length + 1} /{" "}
+              {AGENTS_DATA.length + 1}
+            </span>
+
+          </div>
+
+          {/* =================================================
+              30 CARD GRID
+              ================================================= */}
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+
+            {/* ALL AGENTS */}
+
+            <AllAgentsCard
+              active={isAllAgents}
+              onClick={() =>
+                handleAgentSelect("all")
+              }
+            />
+
+            {/* AGENTS */}
+
+            {filteredAgents.map((agent) => (
+              <AgentCard
+                key={agent.id}
+                agent={agent}
+                active={
+                  selectedAgentId ===
+                  agent.id
+                }
+                onClick={() =>
+                  handleAgentSelect(
+                    agent.id
+                  )
+                }
+              />
+            ))}
+
+          </div>
+
+        </section>
+
+        {/* =================================================
+            AGENT INTEL
+            HIDDEN FOR ALL AGENTS
+            ================================================= */}
+
+        {!isAllAgents && (
+          <section
+            id="agent-intel"
+            className="mb-12 border border-white/[0.1] bg-[#0A0C0F] p-6 sm:p-10 lg:p-12"
+          >
+
+            {/* HEADER */}
+
+            <div className="mb-8 flex flex-col gap-3 border-b border-white/[0.08] pb-4 sm:flex-row sm:items-center sm:justify-between">
+
+              <div className="flex items-center gap-2 font-mono text-[11px] font-extrabold uppercase tracking-[0.3em] text-[#FF4655]">
+
+                <span className="h-1.5 w-1.5 bg-[#FF4655]" />
+
+                02 // AGENT INTEL
+
+              </div>
+
+              <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">
+
+                PROTOCOL ID:{" "}
+
+                {selectedAgent.id.toUpperCase()}
+
+              </span>
+
+            </div>
+
+            <div className="grid gap-10 lg:grid-cols-12 lg:items-center">
+
+              {/* VISUAL */}
+
+              <div className="relative flex h-[380px] items-center justify-center overflow-hidden border border-white/[0.06] bg-[#060709] sm:h-[480px] lg:col-span-5">
+
                 <img
                   src={`/agent/background/${selectedAgent.folder}.png`}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover opacity-30"
+                  className="absolute inset-0 h-full w-full object-cover opacity-25"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#08090B] via-[#08090B]/20 to-transparent" />
-
-                {/* LARGE AGENT PORTRAIT */}
                 <img
                   src={`/agent/picture/${selectedAgent.folder}.png`}
                   alt={selectedAgent.name}
-                  className="absolute inset-x-0 bottom-0 mx-auto h-[95%] w-full object-contain object-bottom"
+                  className="relative z-10 h-full w-auto object-contain transition duration-500 hover:scale-105"
                 />
 
-                <div className="absolute left-4 top-4 sm:left-7 sm:top-7">
-                  <p className="font-display text-[9px] font-bold uppercase tracking-[0.2em] text-[#FF4655]">
-                    Selected agent
-                  </p>
-                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0C0F] via-transparent to-[#0A0C0F]/40" />
 
-                <div className="absolute bottom-5 left-4 sm:bottom-7 sm:left-7">
-                  <p className="font-display text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FF4655]">
-                    {selectedAgent.role}
-                  </p>
+                <div className="absolute left-2 top-2 h-3 w-3 border-l-2 border-t-2 border-[#FF4655]" />
 
-                  <h2 className="mt-1 font-display text-4xl font-bold uppercase leading-none tracking-[-0.04em] text-white sm:text-5xl">
-                    {selectedAgent.name}
-                  </h2>
-                </div>
+                <div className="absolute right-2 top-2 h-3 w-3 border-r-2 border-t-2 border-[#FF4655]" />
+
+                <div className="absolute bottom-2 left-2 h-3 w-3 border-b-2 border-l-2 border-[#FF4655]" />
+
+                <div className="absolute bottom-2 right-2 h-3 w-3 border-b-2 border-r-2 border-[#FF4655]" />
+
               </div>
 
-              {/* ABILITIES */}
-              <div>
-                <div className="flex items-end justify-between gap-4">
-                  <div>
-                    <p className="font-display text-[10px] font-bold tracking-[0.18em] text-[#555960]">
-                      ABILITIES
-                    </p>
+              {/* DETAILS */}
 
-                    <h3 className="mt-2 font-display text-2xl font-bold uppercase">
-                      Know your kit
+              <div className="space-y-6 lg:col-span-7">
+
+                <div>
+
+                  <span className="inline-flex items-center gap-2 border border-[#FF4655]/30 bg-[#FF4655]/10 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#FF4655]">
+
+                    <img
+                      src={selectedAgent.roleIcon}
+                      alt=""
+                      className="h-3.5 w-3.5 object-contain"
+                    />
+
+                    {selectedAgent.role}
+
+                  </span>
+
+                  <h2 className="mt-3 font-display text-4xl font-black uppercase tracking-tight sm:text-6xl">
+
+                    {selectedAgent.name}
+
+                  </h2>
+
+                  <p className="mt-3 max-w-2xl text-xs leading-relaxed text-gray-300 sm:text-sm">
+
+                    {selectedAgent.biography}
+
+                  </p>
+
+                </div>
+
+                {/* ABILITY HEADER */}
+
+                <div className="flex items-center justify-between border-b border-white/[0.08] pb-2">
+
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400">
+
+                    SPECIAL ABILITIES
+
+                  </span>
+
+                  <span className="font-mono text-[10px] text-[#FF4655]">
+
+                    {selectedAbility[1]}
+
+                  </span>
+
+                </div>
+
+                {/* ABILITIES */}
+
+                <div className="grid grid-cols-4 gap-2">
+
+                  {selectedAgent.abilities.map(
+                    (ability, index) => {
+
+                      const active =
+                        index ===
+                        activeAbilityIndex
+
+                      return (
+                        <button
+                          key={`${selectedAgent.id}-${ability[0]}`}
+                          type="button"
+                          onClick={() =>
+                            setActiveAbilityIndex(
+                              index
+                            )
+                          }
+                          className={`flex flex-col items-center justify-center border p-3 transition ${
+                            active
+                              ? "border-[#FF4655] bg-[#FF4655]/10"
+                              : "border-white/[0.08] bg-[#07080A] hover:border-white/[0.2]"
+                          }`}
+                        >
+
+                          <img
+                            src={`/agent/ability/${selectedAgent.folder}/${ability[0]}.png`}
+                            alt={ability[1]}
+                            className={`h-8 w-8 object-contain ${
+                              active
+                                ? "brightness-200"
+                                : "opacity-60"
+                            }`}
+                          />
+
+                          <span className="mt-2 font-mono text-xs font-bold text-[#FF4655]">
+
+                            [{ability[0]}]
+
+                          </span>
+
+                        </button>
+                      )
+                    }
+                  )}
+
+                </div>
+
+                {/* DESCRIPTION */}
+
+                <div className="border border-white/[0.08] bg-[#07080A] p-5">
+
+                  <div className="mb-2 flex items-center justify-between">
+
+                    <h3 className="font-display text-sm font-bold uppercase tracking-wider">
+
+                      {selectedAbility[1]}
+
                     </h3>
+
+                    <span className="font-mono text-[10px] text-[#FF4655]">
+
+                      KEY: {selectedAbility[0]}
+
+                    </span>
+
                   </div>
 
-                  <button className="hidden items-center gap-2 font-display text-[9px] font-bold uppercase tracking-[0.12em] text-[#70737B] transition hover:text-white sm:flex">
-                    View clips
-                    <ArrowIcon />
-                  </button>
+                  <p className="text-xs leading-relaxed text-gray-400">
+
+                    {selectedAbility[2]}
+
+                  </p>
+
                 </div>
 
-                <div className="mt-5 space-y-2 sm:mt-7">
-                  {selectedAgent.abilities.map(([key, abilityName]) => {
-                    const abilityImage =
-                      `/agent/ability/${selectedAgent.folder}/${key}.png`
-
-                    return (
-                      <div
-                        key={key}
-                        className="group flex gap-3 border border-white/[0.06] bg-[#0D0F12] p-3 transition hover:border-[#FF4655]/30 sm:gap-4 sm:p-4"
-                      >
-                        {/* KEY */}
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-white/[0.08] bg-[#111317] sm:h-12 sm:w-12">
-                          <span className="font-display text-[13px] font-bold text-[#FF4655]">
-                            {key}
-                          </span>
-                        </div>
-
-                        {/* ICON */}
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-[#15171B] sm:h-12 sm:w-12">
-                          <img
-                            src={abilityImage}
-                            alt={abilityName}
-                            className="h-7 w-7 object-contain transition group-hover:scale-110 sm:h-8 sm:w-8"
-                          />
-                        </div>
-
-                        {/* INFO */}
-                        <div className="min-w-0">
-                          <h4 className="font-display text-[12px] font-bold uppercase tracking-[0.04em] text-white">
-                            {abilityName}
-                          </h4>
-
-                          <p className="mt-1 text-[10px] leading-5 text-[#666A72] sm:mt-1.5 sm:text-[11px]">
-                            {ABILITY_DESCRIPTIONS[abilityName] || `${abilityName} ability.`}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-
-                {/* MOBILE VIEW CLIPS */}
-                <button className="mt-5 flex items-center gap-2 font-display text-[9px] font-bold uppercase tracking-[0.12em] text-[#70737B] transition hover:text-white sm:hidden">
-                  View {selectedAgent.name} clips
-                  <ArrowIcon />
-                </button>
               </div>
-            </div>
-          </div>
-        </section>
-      )}
 
-      {/* COMMUNITY CLIPS */}
-      {selectedAgent && (
-        <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 sm:py-14 lg:px-10">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="font-display text-[10px] font-bold tracking-[0.18em] text-[#555960]">
-                COMMUNITY
+            </div>
+
+          </section>
+        )}
+
+        {/* =================================================
+            COMMUNITY CLIPS
+            ================================================= */}
+
+        <section className="mb-12 border border-white/[0.08] bg-[#0A0C0F] p-6 sm:p-10">
+
+          {/* HEADER */}
+
+          <div className="mb-8 flex flex-col gap-3 border-b border-white/[0.08] pb-4 sm:flex-row sm:items-center sm:justify-between">
+
+            <div className="flex items-center gap-2 font-mono text-[11px] font-extrabold uppercase tracking-[0.3em] text-[#FF4655]">
+
+              <span className="h-1.5 w-1.5 bg-[#FF4655]" />
+
+              {isAllAgents
+                ? "02 // ALL COMMUNITY CLIPS"
+                : "03 // COMMUNITY CLIPS"}
+
+            </div>
+
+            <span className="font-mono text-[10px] uppercase tracking-widest text-gray-500">
+
+              {isAllAgents
+                ? "ALL AGENTS"
+                : selectedAgent.name}
+
+            </span>
+
+          </div>
+
+          {/* LOADING */}
+
+          {loadingClips ? (
+
+            <div className="flex h-48 items-center justify-center border border-white/[0.05] bg-[#07080A]">
+
+              <div className="flex items-center gap-3 font-mono text-xs text-gray-400">
+
+                <span className="h-2 w-2 animate-ping bg-[#FF4655]" />
+
+                RETRIEVING COMMUNITY ARCHIVES...
+
+              </div>
+
+            </div>
+
+          ) : clips.length > 0 ? (
+
+            /* =================================================
+               CLIPS
+               ================================================= */
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+              {clips.map((clip) => {
+
+                const clipId =
+                  getClipId(clip)
+
+                const videoUrl =
+                  getVideoUrl(clip)
+
+                const thumbnail =
+                  getThumbnail(
+                    clip,
+                    selectedAgent
+                  )
+
+                const isPlaying =
+                  activeClipVideo ===
+                  clipId
+
+                return (
+                  <div
+                    key={clipId}
+                    className="group overflow-hidden border border-white/[0.08] bg-[#07080A]"
+                  >
+
+                    {/* VIDEO */}
+
+                    <div className="relative aspect-video bg-black">
+
+                      {isPlaying &&
+                      videoUrl ? (
+
+                        <video
+                          src={videoUrl}
+                          controls
+                          autoPlay
+                          playsInline
+                          className="h-full w-full object-cover"
+                          onEnded={() =>
+                            setActiveClipVideo(
+                              null
+                            )
+                          }
+                        />
+
+                      ) : (
+
+                        <>
+                          <img
+                            src={thumbnail}
+                            alt={
+                              clip.title ||
+                              "Community clip"
+                            }
+                            className="h-full w-full object-cover opacity-80 transition duration-300 group-hover:scale-105"
+                          />
+
+                          {videoUrl && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handlePlayClip(
+                                  clip
+                                )
+                              }
+                              className="absolute inset-0 flex items-center justify-center bg-black/40"
+                              aria-label="Play clip"
+                            >
+
+                              <div className="flex h-12 w-12 items-center justify-center bg-[#FF4655] text-white transition group-hover:scale-110">
+
+                                <Play
+                                  size={20}
+                                  className="ml-0.5 fill-current"
+                                />
+
+                              </div>
+
+                            </button>
+                          )}
+
+                        </>
+                      )}
+
+                    </div>
+
+                    {/* INFO */}
+
+                    <div className="p-4">
+
+                      <h3 className="line-clamp-1 font-display text-sm font-bold uppercase">
+
+                        {clip.title ||
+                          "COMMUNITY HIGHLIGHT"}
+
+                      </h3>
+
+                      <p className="mt-1 font-mono text-[10px] text-gray-400">
+
+                        PLAYER:{" "}
+
+                        <span className="text-white">
+
+                          {clip.playerName ||
+                            clip.username ||
+                            "PLAYER"}
+
+                        </span>
+
+                      </p>
+
+                      <div className="mt-4 flex items-center justify-between border-t border-white/[0.06] pt-3 font-mono text-[9px] uppercase tracking-wider text-gray-500">
+
+                        <span>
+                          MAP:{" "}
+                          {clip.map ||
+                            "CLASSIFIED"}
+                        </span>
+
+                        <span className="text-[#FF4655]">
+
+                          {clip.agent ||
+                            clip.type ||
+                            "PLAY"}
+
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+                )
+              })}
+
+            </div>
+
+          ) : (
+
+            /* =================================================
+               EMPTY
+               ================================================= */
+
+            <div className="flex flex-col items-center justify-center border border-white/[0.06] bg-[#07080A] px-4 py-16 text-center">
+
+              <div className="mb-4 flex h-12 w-12 items-center justify-center bg-white/[0.03] text-[#FF4655]">
+
+                <Radio size={24} />
+
+              </div>
+
+              <h3 className="font-display text-lg font-black uppercase tracking-wider">
+
+                {isAllAgents
+                  ? "NO COMMUNITY CLIPS YET"
+                  : "YOU HAVE NOT PLAYED THIS AGENT YET"}
+
+              </h3>
+
+              <p className="mt-2 max-w-md font-mono text-xs uppercase tracking-widest text-gray-500">
+
+                {isAllAgents
+                  ? "Community clips will appear here when available."
+                  : "Clips for this agent will appear here when available."}
+
               </p>
 
-              <h2 className="mt-2 font-display text-2xl font-bold uppercase tracking-[-0.03em]">
-                {selectedAgent.name} clips
-              </h2>
             </div>
 
-            <button className="hidden items-center gap-2 font-display text-[9px] font-bold uppercase tracking-[0.12em] text-[#70737B] transition hover:text-white sm:flex">
-              View all clips
-              <ChevronRight size={13} />
-            </button>
-          </div>
+          )}
 
-          <div className="mt-6 grid gap-3 sm:mt-7 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              "/clip/clutch.png",
-              "/clip/funny.png",
-              "/clip/shot.png",
-              "/clip/ace.jpg"
-            ].map((clip, index) => {
-              const isFailed = failedClips[clip]
-
-              return (
-                <div
-                  key={clip}
-                  className="group relative aspect-video overflow-hidden border border-white/[0.06] bg-[#0D0F12]"
-                >
-                  {isFailed ? (
-                    <div className="flex h-full w-full items-center justify-center p-4 text-center">
-                      <p className="font-display text-[11px] font-semibold uppercase tracking-[0.08em] text-[#70737B]">
-                        you not played this player yet
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <img
-                        src={clip}
-                        alt={`${selectedAgent.name} community clip ${index + 1}`}
-                        onError={() => handleImageError(clip)}
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                      />
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
-
-                      <div className="absolute bottom-2.5 left-2.5 flex items-center gap-2 sm:bottom-3 sm:left-3">
-                        <div className="flex h-7 w-7 items-center justify-center bg-[#FF4655]">
-                          <Play size={11} fill="white" />
-                        </div>
-
-                        <div>
-                          <p className="font-display text-[9px] font-bold uppercase text-white">
-                            Community clip
-                          </p>
-                          <p className="text-[8px] text-gray-500">
-                            {selectedAgent.name}
-                          </p>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )
-            })}
-          </div>
         </section>
-      )}
-    </main>
+
+      </main>
+
+    </div>
   )
 }
-
-function ArrowIcon() {
-  return <ChevronRight size={13} />
-}
-
-export default Agents

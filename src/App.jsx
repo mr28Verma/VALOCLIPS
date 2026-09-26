@@ -9,11 +9,12 @@ import {
 
 import Navbar from "./components/Navbar"
 import Landing from "./pages/Landing"
-import DemoProfile from "./pages/DemoProfile"
+// import DemoProfile from "./pages/DemoProfile"
 import Agents from "./pages/Agents"
-import Leaderboards from "./pages/Leaderboard"
+import Weekly from "./pages/Weekly"
 import LegalPage from "./pages/LegalPage"
 import Footer from "./components/Footer"
+import Profile from "./pages/Profile"
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -43,9 +44,9 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Landing />} />
-        <Route path="/profile" element={<DemoProfile />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/agents" element={<Agents />} />
-        <Route path="/leaderboards" element={<Leaderboards />} />
+        <Route path="/weekly" element={<Weekly />} />
         <Route path="/privacy" element={<LegalPage />} />
         <Route path="/terms" element={<LegalPage />} />
         <Route path="/dmca" element={<LegalPage />} />
